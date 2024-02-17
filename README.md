@@ -711,9 +711,14 @@ First of all we have to install Docker!
 Remember that you can run the `ssh roman-empire` command from your local machine to easily access your remote instance.
 
 ``` bash
-g***k@roman-empire:~$ sudo apt-get update
-g***k@man-empirero:~$ sudo apt-get install docker.io
+sudo apt-get update
+sudo apt-get install docker.io
+sudo groupadd docker
+sudo gpasswd -a $USER docker
+sudo service docker restart
+logout
 ```
+And then again `ssh roman-empire`
 
 And we need also docker compose, we can choose best version [here](https://github.com/docker/compose)
 
@@ -752,11 +757,20 @@ Everything for quick start can be found here - so nice and short and clear [vide
 
 But I've copied my DEZoomcamp Mage Project with some additions and examples just to reuse when developing
 
-We shoul clone [the repository of Roman Empire Project](https://github.com/nyan222/roman_empire_zoomcamp.git) to VM
+We should clone [the repository of Roman Empire Project](https://github.com/nyan222/roman_empire_zoomcamp.git) to VM
 ```bash
 cd
 git clone https://github.com/nyan222/roman_empire_zoomcamp.git
-
+cd roman_empire_zoomcamp/mage-empire/
+mv dev.env .env
+docker-compose up -d --build
+docker ps
+```
+And finally we see this:
+```bash
+CONTAINER ID   IMAGE                  COMMAND                  CREATED              STATUS          PORTS                                                 NAMES
+13aad82abe5b   mageai/mageai:latest   "mage start magic-ro…"   About a minute ago   Up 56 seconds   0.0.0.0:6789->6789/tcp, :::6789->6789/tcp, 7789/tcp   mage-empire-magic-1
+7e13e665feeb   postgres:14            "docker-entrypoint.s…"   About a minute ago   Up 56 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp             magic-roman-postgres
 ```
 
 For some debugging things we can  install Anaconda for Linux, but it's optional.

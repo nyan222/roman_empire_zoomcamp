@@ -11,4 +11,3 @@ wordcloud
 nltk
 snscrape
 requests
-glob
