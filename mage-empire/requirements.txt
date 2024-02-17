@@ -1,0 +1,14 @@
+pandas
+protobuf
+pyarrow
+pandas-gbq
+psycopg2-binary
+sqlalchemy
+pytest
+gcsfs
+jupyter
+wordcloud
+nltk
+snscrape
+requests
+glob
