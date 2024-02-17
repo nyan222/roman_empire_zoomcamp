@@ -761,6 +761,7 @@ We should clone [the repository of Roman Empire Project](https://github.com/nyan
 ```bash
 cd
 git clone https://github.com/nyan222/roman_empire_zoomcamp.git
+chmod 777 roman_empire_zoomcamp
 cd roman_empire_zoomcamp/mage-empire/
 mv dev.env .env
 docker-compose up -d --build
@@ -771,6 +772,16 @@ And finally we see this:
 CONTAINER ID   IMAGE                  COMMAND                  CREATED              STATUS          PORTS                                                 NAMES
 13aad82abe5b   mageai/mageai:latest   "mage start magic-ro…"   About a minute ago   Up 56 seconds   0.0.0.0:6789->6789/tcp, :::6789->6789/tcp, 7789/tcp   mage-empire-magic-1
 7e13e665feeb   postgres:14            "docker-entrypoint.s…"   About a minute ago   Up 56 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp             magic-roman-postgres
+```
+
+And now we need to put Google service account key to our mage project
+
+Do it from your local machine.
+Note!!!: yuo shoud begin from directory, where the key lies and act quickly!
+```bash
+sftp roman-empire
+cd roman_empire_zoomcamp/mage-empire
+put cfk.json
 ```
 
 For some debugging things we can  install Anaconda for Linux, but it's optional.
@@ -801,6 +812,53 @@ pip install -U pip setuptools wheel
 ```
 
 After that, you have a conda environment `myenv` with all required libraries installed.
+
+### Step 9: Edit configuration file
+
+Next, you’ll need to create a configuration file with your details for the orchestration workflow.
+
+We have a configuration file for Mage here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/io_config.yaml`.
+
+The most important thing in this project is that we have to check the path to the credential key in file and in Mage terminal, and everything must be ok.
+
+If not, check, where credential json is. It's strange, but sometimes it puts (when we use sftp) in home directory...
+
+```txt
+dev:
+  # PostgresSQL
+  POSTGRES_CONNECT_TIMEOUT: 10
+  POSTGRES_DBNAME: "{{ env_var('POSTGRES_DBNAME') }}"
+  POSTGRES_SCHEMA: "{{ env_var('POSTGRES_SCHEMA') }}" # Optional
+  POSTGRES_USER: "{{ env_var('POSTGRES_USER') }}"
+  POSTGRES_PASSWORD: "{{ env_var('POSTGRES_PASSWORD') }}"
+  POSTGRES_HOST: "{{ env_var('POSTGRES_HOST') }}"
+  POSTGRES_PORT: "{{ env_var('POSTGRES_PORT') }}"
+  #POSTGRES_CONNECTION_METHOD: direct
+  # Google
+  GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/cfk.json"
+  GOOGLE_LOCATION: us-west1 # Optional
+```
+
+Note the name of the environment! (dev)
+
+To get Mage interface on local machine we shoul throw port from VSCode (this works, another methods not ok in my f**king network)
+
+In VS Code, go to the **Command Palette** (`Shift+Cmd+P`), select **Remote-SSH: Connect to Host…​**, and select your VM `roman-empire`.
+
+You will get your own VS Code window, connected to you server, and will be able to throw port (manually)
+
+![trp](pics/trp.png)
+
+So we can open our Mage UI, then Terminal and test the location of the key:
+```bash
+pwd
+ls -la
+```
+
+![mgt](pics/mgt.png)
+
+I hope everything is ok, let's go and build pipeline!
+
 
 ### Step 13: Stop and delete to avoid costs
 
