@@ -1,4 +1,4 @@
-# roman_empire_zoomcamp
+# Roman Empire Zoomcamp
 Project for DTC Data Engineering Zoomcamp 2024
 
 ![wallpaper](pics/wallpaper2.jpeg)
@@ -32,15 +32,15 @@ A dashboard was built with [Google Looker](https://cloud.google.com/looker) from
 
 This diagram presents the high level architecture of the project.
 
-![architecture](pics/architecture.png)
+(Temporary unavailable) ![architecture](pics/architecture.png)
 
 ## Dashboard
 
 This is what my final dashboard looks like.
 
-![s26](pics/s26.png)
+(Temporary unavailable) ![s26](pics/s26.png)
 
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/)
+(Temporary unavailable) You can view my dashboard [here](https://lookerstudio.google.com/reporting/)
 
 ## Reproducibility
 
@@ -52,7 +52,7 @@ You will find below **detailed instructions** for replicating this pipeline from
 - Make incremental model, to append only the latest data from each load.
 - Documentation and data quality tests in dbt.
 - Try Spark transformations instead of dbt
-- Streaming process with Kafka and Spark.
+- Try Streaming process with Kafka and Spark.
 
 ## License
 
@@ -73,7 +73,7 @@ The step-by-step instructions consist of several steps:
 - Set Up Your Virtual Machine
   - Step 6: Create SSH key pairs (optional)
   - Step 7: Create SSH config file (optional)
-  - Step 8: Install packages on the Virtual Machine
+  - Step 8: Install packages on the Virtual Machine (Docker & Mage)
 - Set Up and run pipelines
   - Step 9: Edit configuration file
   - Step 10: Build pipelines with Mage
@@ -89,7 +89,8 @@ The project was developed using a Macbook, but locally there is only Terraform a
 This repository (<https://github.com/nyan222/roman_empire_zoomcamp>) contains following folders:
 
 - `terraform`: this folder is related to Terraform.
-- `mage`: this folder contains Mage project with dbt inside Mage.
+- `mage-empire`: this folder contains Mage project with dbt inside Mage.
+- `pics`: this folder contains pictures for this README.
 
 ### Step 1: Create a new project in Google Cloud Platform
 
@@ -105,7 +106,7 @@ Once you’ve created the account, logging into [Google Cloud Platform (GCP) con
 
 Go to [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com), select your project (mine is `roman-empire`) and click on **ENABLE** button.
 
-![ce](pics/ce.png)
+![ce](pics/ce.jpg)
 
 This operation may take some minutes.
 
@@ -218,7 +219,7 @@ gcloud iam service-accounts keys create ~/.config/gcloud/cfk.json \
 ```
 (cfk means coral-firefly-key:)
 
-You also can get the key from [console] (https://cloud.google.com/iam/docs/keys-create-delete)
+You also can get the key from [console](https://cloud.google.com/iam/docs/keys-create-delete)
 
 Please be careful with git!!! Use *.json in every .gitignore you have, the key shoud not get to repository. Everyone who get it can use your cloud resources.
 
@@ -745,7 +746,8 @@ docker-compose version
 # Docker Compose version v2.15.0
 ```
 
-So now we need our workflow orchestrator Mage
+So now we need our workflow orchestrator Mage.
+
 Everything for quick start can be found here - so nice and short and clear [videos](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/02-workflow-orchestration)
 
 But I've copied my DEZoomcamp Mage Project with some additions and examples just to reuse when developing
@@ -785,265 +787,6 @@ pip install -U pip setuptools wheel
 ```
 
 After that, you have a conda environment `myenv` with all required libraries installed.
-
-### Step 9: Edit configuration file
-
-Next, you’ll need to create a configuration file with your details for the orchestration workflow.
-
-On your VM instance, create a configuration file `~/twitter-dashboard/scripts/configuration.conf`.
-
-``` bash
-cd ~/twitter-dashboard/scripts
-touch configuration.conf
-```
-
-Copy in the following.
-
-``` conf
-[gcp_config]
-project_id = PROJECT_ID
-data_lake_bucket = twitter_data_lake
-bucket_filename = twitter-posts
-bq_dataset = twitter
-bq_table = posts
-
-[prefect_config]
-gcp_credentials = twitter-gcp-creds
-gcs_bucket_block_name = twitter-gcs
-
-[twitter_config]
-hashtag = #dataengineering
-limit = 50000
-```
-
-Replace the `PROJECT_ID` with your own (mine is `dtc-de-382923`).
-
-#### Connect to Host with VS Code
-
-To edit a file on a remote machine, you could use Vim, nano or Visual Studio Code (VS Code).
-
-I prefer the third option and connect Visual Studio Code (VS Code) to the remote machine.
-
-In VS Code, go to the **Command Palette** (`Shift+Cmd+P`), select **Remote-SSH: Connect to Host…​**, and select your VM
-instance `twitter-vm`. A new VS Code window should appear.
-
-You now access the directories and files of your virtual machine with VS Code as if it were on your own machine.
-
-![s19](pics/s19.png)
-
-### Step 10: Setup Prefect
-
-[Prefect](https://www.prefect.io/) is a modern workflow orchestration tool for coordinating all of our data tools.
-
-On your VM instance, start the Prefect Orion orchestration engine with the folowing commands.
-
-Remember that you can run the `ssh twitter-vm` command from your local machine to easily access your remote instance.
-
-``` bash
-conda activate myenv
-prefect orion start
-```
-
-You should see this.
-
-![s17](pics/s17.png)
-
-Still on your VM instance, open another terminal window and run the following commands.
-
-Remember that you can run the `ssh twitter-vm` command from your local machine to easily access your remote instance.
-
-``` bash
-conda activate myenv
-prefect profile use default
-prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
-```
-
-You should see this.
-
-![s18](pics/s18.png)
-
-If you haven’t already, connect your VS Code to your remote machine as shown in the previous step.
-
-In this new VS Code window, open the terminal, click on **PORTS** tab, click on **Forward a Port** button, and enter the
-port `4200`.
-
-![s01](pics/s01.png)
-
-Check out the dashboard at <http://127.0.0.1:4200>.
-
-![s02](pics/s02.png)
-
-To allow Prefect to orchestrate the pipeline, permissions must be granted to Prefect to access other services. For this,
-Blocks must be set up in Prefect, namely GCP Credentials, GCP Bucket…​
-
-Instead of adding these blocks manually, it is easier to add them programmatically.
-
-From the VS Code linked to your VM instance, create the `twitter-dashbord/scripts/make_gcp_block.py` script on your VM
-instance.
-
-Copy in the following.
-
-``` python
-from prefect_gcp import GcpCredentials
-from prefect_gcp.cloud_storage import GcsBucket
-
-# Replace this PLACEHOLDER dict with your own service account info
-# See https://prefecthq.github.io/prefect-gcp/
-service_account_info = {
-  # COPY HERE THE CONTENT OF THE TERRAFORM.JSON FILE
-}
-
-GcpCredentials(
-    service_account_info=service_account_info
-).save("twitter-gcp-creds", overwrite=True)
-
-# Insert your GCS bucket name.
-bucket_block = GcsBucket(
-    gcp_credentials=GcpCredentials.load("twitter-gcp-creds"),
-    bucket="twitter_data_lake_dtc-de-382923",
-)
-
-bucket_block.save("twitter-gcs", overwrite=True)
-```
-
-Replace the following:
-
-- `service_account_info` by the content of the `terraform.json` file you created earlier.
-- `bucket` by your GCS bucket name (mine is `twitter_data_lake_dtc-de-382923`).
-
-Here a trick to copy the contents of a file. From your local machine, run this command.
-
-``` bash
-cat ~/.config/gcloud/terraform.json | pbcopy
-```
-
-**Warning!** Remember to never push to GitHub the script with your credentials inside.
-
-On your VM instance, run the following commands:
-
-``` bash
-conda activate myenv
-cd ~/twitter-dashboard
-python scripts/make_gcp_block.py
-```
-
-No message appears. Don’t worry. It should have worked.
-
-### Step 11: Run the pipelines
-
-We have two pipelines:
-
-- The first retrieves the data from Twitter, cleans it and places it in a Data Lake.
-- The second one moves the data from the lake to a Data Warehouse.
-
-#### From Data Source to Data Lake
-
-Let’s start with the first pipeline.
-
-To extract data from Twitter, I chose
-[snscrape](https://betterprogramming.pub/how-to-scrape-tweets-with-snscrape-90124ed006af).
-
-This tool didn’t seem to impose limits on the number of queries and tweets retrieved, unlike other tools like
-[tweepy](https://docs.tweepy.org/en/stable/) that use the [Twitter
-API](https://developer.twitter.com/en/docs/platform-overview) which [limits
-requests](https://developer.twitter.com/en/docs/twitter-api/v1/rate-limits). The other tool
-[twint](https://github.com/twintproject/twint) does not use Twitter API but is recently archived.
-
-On your VM instance, run the following commands.
-
-``` bash
-cd ~/twitter-dashboard
-conda activate myenv
-prefect deployment build scripts/web_to_gcs.py:web_to_gcs -n twitter -o scripts/web_to_gcs-deployment.yaml
-prefect deployment apply scripts/web_to_gcs-deployment.yaml
-prefect deployment run "web-to-gcs/twitter"
-prefect agent start -q "default"
-```
-
-When running this first pipeline, you should see this in the Prefect Orion interface (<http://127.0.0.1:4200/>).
-
-![s20](pics/s20.png)
-
-![s21](pics/s21.png)
-
-Also, you should see this in your terminal.
-
-![s22](pics/s22.png)
-
-This request takes time. Let this work still run for about 20 minutes.
-
-After that, all tasks should be completed successfully.
-
-![s23](pics/s23.png)
-
-Go to Google Cloud Console, in the left menu select **Cloud Storage**, then select **Buckets**.
-
-You should see your dataset `twitter-posts.parquet`.
-
-![s24](pics/s24.png)
-
-#### From Data Lake to Data Warehouse
-
-The second pipeline reads that dataset from the Cloud Storage bucket, does some transformations with
-[spacy](https://spacy.io/).
-
-Specifically, it cleans tweets and determines the main technology product the tweets are talking about with NLP analysis.
-
-Finally, it saves the tweet data to a Data Warehouse BigQuery.
-
-``` bash
-cd ~/twitter-dashboard
-conda activate myenv
-prefect deployment build scripts/gcs_to_bq.py:gcs_to_bq -n twitter -o scripts/gcs_to_bq-deployment.yaml
-prefect deployment apply scripts/gcs_to_bq-deployment.yaml
-prefect deployment run "gcs-to-bq/twitter"
-prefect agent start -q "default"
-```
-
-The last step takes time to execute (about 5 minutes).
-
-When finished see should see this on Google Cloud Console, BigQuery section.
-
-![s25](pics/s25.png)
-
-Great! Tweet data is ready for visualization.
-
-### Step 12: Create dashboard for data visualization
-
-Now that we have our data, let’s build a dashboard to visualize the data.
-
-Looker is a tool that helps you explore, share, and visualize your company’s data so that you can make better business
-decisions.
-
-Go to [Looker Studio](https://lookerstudio.google.com/u/0/) and follow these steps:
-
-- Create a **Data source**.
-- Select **BigQuery**.
-- **Authorize** Looker Studio to connect to your **BigQuery** project.
-- Select **Project Id** `dtc-de`.
-- Select **Dataset** `twitter`.
-- Select **Table** `posts`.
-- Click on **CONNECT** button.
-
-<table>
-<tr><td>
-<img src="pics/s07.png">
-</td><td>
-<img src="pics/s08.png">
-</td></tr>
-</table>
-
-Click on **CREATE REPORT** button.
-
-You can now feel free to create some visualisations.
-
-Looker tutorials can be found [here](https://cloud.google.com/looker/docs/intro).
-
-This is what my final dashboard looks like.
-
-![s26](pics/s26.png)
-
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/c44de9b7-7bfc-480a-887e-ad9ea441af6d)
 
 ### Step 13: Stop and delete to avoid costs
 
