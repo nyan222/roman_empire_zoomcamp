@@ -9,22 +9,19 @@ The goal of this project is to apply everything we have learned in [the course](
 
 How often do you think about the Roman Empire?
 
-All my schoolmates and me think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of cause the ancient. And when this meme became popular (wiki says in in mid-September 2023, we'll check), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
+All my schoolmates and me think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of cause the ancient. And when this meme became popular (wiki says in in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
 
-In this project I want to think about the Roman Empire with twitter users, just because it is a huge social network overflowing with data in every conceivable field, updated in real time, easily
-accessible and made for short messages (the data is not so big:)
+In this project I want to think about the Roman Empire with authors and readers of newspapers since 1690 to 1963;)
 
-I really want to know timeline of thinking about the Roman Empire and sentiment of messages, to see word cloud of tweets' content and top 5 tweets. 
+I really want to know timeline of thinking about the Roman Empire and sentiment of messages, to see word cloud of article's content
 
 ## Project architecture
 
-Data comes from Twitter. They are extracted using
-[snscrape](https://medium.com/@noumanmustafa741/getting-data-from-twitter-using-snscrape-d6f8f4243d8b).
+Data comes from HuggingFace
 
 The whole process is orchestrated by the workflow orchestration engine [Mage](https://docs.mage.ai/introduction/overview).
 
-A pipeline stars with scheduler and gets the data, cleans it, saves first it as a parquet file and then moves to a Data Lake (GCP Storage). Another pipeline starts with trigger and 
-gets data from the Data Lake to tranfer it to DWH (BigQuery) with some transformations, and the third triggered pipeline makes transformations with dbt.
+A pipeline stars with scheduler and gets the data, filters and cleans it a little, saves it first as a parquet file and then moves to a Data Lake (GCP Storage). Another pipeline starts with trigger and gets data from the Data Lake to tranfer it to DWH (BigQuery) with some transformations, and the third triggered pipeline makes transformations with dbt.
 
 To create resources in GCP I used [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) servise and is really useful.
 
@@ -566,11 +563,11 @@ In the Google Cloud console, on the left menu, go to the **Compute Engine** and 
 
 Take note of your `EXTERNAL_IP`. We will need it later.
 
-In the Google Cloud console, on the left menu, go to the **Cloud Storage** and **Buckets**. You shold see a new a new Compute Engine Bucket (mine is `twitter_data_lake_dtc-de-382923`).
+In the Google Cloud console, on the left menu, go to the **Cloud Storage** and **Buckets**. You shold see a new a new Compute Engine Bucket (mine is `roman_empire_zoomcamp`).
 
 ![gb](pics/gb.png)
 
-In the Google Cloud console, on the left menu, go to the **Big Query**. You shold see a new a new BigQuery Datasets (mine is `dtc-de-382923.twitter`).
+In the Google Cloud console, on the left menu, go to the **Big Query**. You shold see a new a new BigQuery Datasets (mine is `roman_raw`).
 
 ![bq](pics/bq.png)
 
@@ -802,12 +799,12 @@ Still on your VM instance, run the following commands to create a conda environm
 
 ``` bash
 cd
-git clone https://github.com/boisalai/twitter-dashboard.git
+git clone https://github.com/nyan222/roman_empire_zoomcamp.git
 conda create -n myenv python=3.9
 conda activate myenv
 conda install pip
 conda update -n base -c defaults conda
-pip install -r ~/twitter-dashboard/requirements.txt
+pip install -r ~/roman_empire_zoomcamp/requirements.txt
 pip install -U pip setuptools wheel
 ```
 
