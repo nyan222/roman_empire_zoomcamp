@@ -17,11 +17,11 @@ I really want to know timeline of thinking about the Roman Empire and sentiment 
 
 ## Project architecture
 
-Data comes from HuggingFace
+Data comes from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers)
 
-The whole process is orchestrated by the workflow orchestration engine [Mage](https://docs.mage.ai/introduction/overview).
+The whole process is orchestrated by the workflow orchestration engine [Mage](https://docs.mage.ai/introduction/overview). It also has dbt blocks!
 
-A pipeline stars with scheduler and gets the data, filters and cleans it a little, saves it first as a parquet file and then moves to a Data Lake (GCP Storage). Another pipeline starts with trigger and gets data from the Data Lake to tranfer it to DWH (BigQuery) with some transformations, and the third triggered pipeline makes transformations with dbt.
+A pipeline starts with scheduler and gets the data, saves it first as a parquet file (with buffer it looks ugly) and then moves to a Data Lake (GCP Storage). Then we transfer data from Data Lake to DWH (BigQuery) with some transformations, and then we do some transformations with dbt.
 
 To create resources in GCP I used [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) servise and is really useful.
 
@@ -74,7 +74,7 @@ The step-by-step instructions consist of several steps:
 - Set Up and run pipelines
   - Step 9: Edit configuration file
   - Step 10: Build pipelines with Mage
-  - Step 11: Run the pipelines
+  - Step 11: dbt development
 - Step 12: Create dashboard for data visualization
 - Step 13: Stop and delete to avoid costs
 
@@ -846,7 +846,7 @@ You will get your own VS Code window, connected to you server, and will be able 
 
 ![trp](pics/trp.png)
 
-So we can open our Mage UI, then Terminal and test the location of the key:
+So we can open our [Mage UI](http://localhost:6789), then Terminal and test the location of the key:
 ```bash
 pwd
 ls -la
@@ -856,6 +856,300 @@ ls -la
 
 I hope everything is ok, let's go and build pipeline!
 
+### Step 10: Build pipelines with Mage
+
+UI is very simple, but it's better to watch this [very short video](https://www.youtube.com/watch?v=stI-gg4QBnI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20) about example_pipeline (3 min)  and the beginning of [this video](https://www.youtube.com/watch?v=w0XmcASRUnc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24) for understanding, how to build pipeline from scratch (first 3 min)
+
+In reality you should press the button New pipeline, then Edit to change the name, and then choose a module.
+But we have already two pipelines - `example_pipeline` from Mage and our `news_to_bq`
+
+So lets go to pipelines (left menu) --> `news_to_bq`
+
+![ntb](pics/ntb.png)
+
+And let's see all the blocks of the pipeline
+
+![ppl](pics/ppl.png)
+
+First we have to load our data
+Of cause I wanted to get modern data from twitter-x or insta, but snscraper does not work anymore, so we have nice dataset from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers)
+
+```text
+Content
+As of January 2024, the collection contains nearly 21 millions unique newspaper and periodical editions published from the 1690 to 1963 (98,742,987,471 words).
+
+The collection was compiled by Pierre-Carl Langlais based on the dumps made available by the Library of Congress. Each parquet file matches one of the 2618 original dump files, including their code name. It has the full text of a few thousand selected at random and a few core metadatas (edition id, date, word counts…). The metadata can be easily expanded thanks to the LOC APIs and other data services.
+
+The American Stories dataset is a curated and enhanced version of the same resource, with significant progress in regards to text quality and documentation. It currently retains about 20% of the original material.
+```
+
+In reality we have 2657 files! That's nice, that dataset grows, and we have to think about it in loader - to load only new files sometimes 
+
+So we have python block `DATA LOADER` with the name `load news` and code below:
+```python
+from google.cloud import storage
+import requests
+import os
+import re
+import datetime
+import pandas as pd
+import pyarrow.parquet as pq
+import pyarrow as pa
+import io
+
+if 'data_loader' not in globals():
+    from mage_ai.data_preparation.decorators import data_loader
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "/home/src/cfk.json"
+
+def get_max_blob_name(bucket_name):
+    storage_client = storage.Client()
+    blobs = storage_client.list_blobs(bucket_name)
+    
+    max_blob_name = max((blob.name for blob in blobs), default=None)
+    return max_blob_name
+
+def upload_to_gcs(bucket, object_name, local_file):
+    """
+    Ref: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python
+    """
+    # # WORKAROUND to prevent timeout for files > 6 MB on 800 kbps upload speed.
+    # # (Ref: https://github.com/googleapis/python-storage/issues/74)
+    # storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
+    # storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
+
+    client = storage.Client()
+    bucket = client.bucket(bucket)
+    blob = bucket.blob(object_name)
+    blob.upload_from_filename(local_file)
+
+
+bucket_name = 'roman_empire_zoomcamp'
+BUCKET = os.environ.get("GCP_GCS_BUCKET", "roman_empire_zoomcamp")
+init_url = 'https://huggingface.co/datasets/PleIAs/US-PD-Newspapers/resolve/refs%2Fconvert%2Fparquet/default/train'
+
+@data_loader
+def load_data(*args, **kwargs):
+    ## we have to find max file in gcs storage directory
+    fn = get_max_blob_name(bucket_name)   
+    print(fn)
+    ## and then extract the number
+    if fn is not None:
+        n = re.search(r'\d+', fn).group()
+        print(n) 
+        n = int(n)
+        m = n + 1
+    else:
+        n = -1
+        m = 0
+    t = True
+    while t:
+        num = '000'+str(m)
+        num = num[-4:]
+        file_name = f"{num}.parquet"
+        request_url = f"{init_url}/{file_name}"
+        print(str(datetime.datetime.now())+": "+request_url)
+        r = requests.head(request_url, allow_redirects=True)
+        print(r.status_code)
+        ## we have to check files in huggingface
+        if m == n+1 and r.status_code != 200: 
+            print('nofile') 
+            raise Exception("no new files")
+        elif m > n+1 and r.status_code != 200:
+            print('nomorefile')  
+            break
+        else:   
+            m = m + 1
+            df = pd.read_parquet(request_url,engine='pyarrow')
+
+            df.to_parquet(file_name, engine='pyarrow',coerce_timestamps="ms",allow_truncated_timestamps=True)###
+            print(f"Parquet: {file_name}")
+    
+            # upload to gcs 
+            upload_to_gcs(BUCKET, f"{file_name}", file_name)
+            print(f"GCS: {file_name}")
+
+
+@test
+def test_output(output, *args) -> None:
+    """
+    Template code for testing the output of the block.
+    """
+    assert output is not None, 'The output is undefined'
+
+```
+
+Nice! There are only two things - loader works for about a day and you should delete local *.parquet files from `~/roman_empire_zoomcamp/mage-empire/magic-roman/`. On the first start with 2657 files you have to do it manually, just not to delete that very parquet, that we load to gcs storage right now, and for other runs we have to put in crontab this line
+```bash
+~/roman_empire_zoomcamp/mage-empire/*.parquet -type f -mtime +1 -exec rm {} +
+```
+To edit crontab ([Crontab Quick Start](https://help.ubuntu.com/community/CronHowto)) we should do this in the terminal of our VM:
+```bash
+crontab -e
+```
+And then edit like in vim ( I for insert, Esc for return, :wq for save and quit)
+
+We have our data in Data Lake (GCS Bucket) and have to move them to DWH (BigQuery)
+
+Sql block `DATA LOADER`, name `read_all_the_news`, connection here and then - BigQuery - dev - Use raw SQL
+```sql
+-- Docs: https://docs.mage.ai/guides/sql-blocks
+CREATE OR REPLACE EXTERNAL TABLE `roman_raw.external_roman`
+OPTIONS (
+  format = PARQUET,
+  uris = ['gs://roman_empire_zoomcamp/*.parquet']
+);
+
+CREATE OR REPLACE TABLE `roman_raw.all_news` as
+select * from `roman_raw.external_roman`;
+```
+![cnn](pics/cnn.png)
+
+From here we have two branches:
+
+1. Sql block `DATA EXPORTER`, name `count_empire`
+Here we count all the articles by yeaar and the articles, that mentioned Roman Empire
+```sql
+create or replace table `coral-firefly-411510.roman_raw.roman_count` as 
+SELECT year, 
+count(*) all_articles,
+sum(case when lower(text) like '%roman empire%' then 1 else 0 end) roman_articles
+FROM (select * , extract( year from cast(date as date)) year 
+from `roman_raw.all_news`) 
+group by year;
+SELECT year, 
+count(*) all_articles,
+sum(case when lower(text) like '%roman empire%' then 1 else 0 end) roman_articles
+FROM (select * , extract( year from cast(date as date)) year 
+from `roman_raw.all_news`) 
+group by year;
+```
+
+2. Sql block `TRANSFORMER`, name `empire_news`
+We select only Roman Empire news!:)
+```sql
+create or replace table `coral-firefly-411510.roman_raw.roman_news` as
+select news.id
+,cast(news.date as date) date
+,news.edition
+,news.page
+,news.file_name
+,news.word_count
+,news.text 
+,news.year 
+from (select * , extract( year from cast(date as date)) year 
+from `roman_raw.all_news`) news
+where lower(text) like '%roman empire%';
+```
+And read this to use in python blocks
+
+Sql block `TRANSFORMER`, name `select_news`
+```sql
+select * from `coral-firefly-411510.roman_raw.roman_news`;
+```
+
+From here we again have two branches:
+
+2.1 Python block `TRANSFORMER`, name `wordcount`
+I want to have wordcloud at my dashboard, so i need wordcount
+```python
+import string
+import re
+import nltk
+#nltk.download('word_tokenize')
+nltk.download('stopwords')
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist
+from nltk.corpus import stopwords
+import pandas as pd
+
+if 'transformer' not in globals():
+    from mage_ai.data_preparation.decorators import transformer
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
+
+
+@transformer
+def transform(data, *args, **kwargs):
+    print(data.shape)
+    df = data.groupby('year').agg({'text': ' '.join}).reset_index()
+
+    # Convert text to lowercase
+    df['text'] = df['text'].str.lower()
+
+    # Remove special characters and digits
+    spec_chars = string.punctuation + '\t'
+    df['text'] = df['text'].apply(lambda x: ''.join([ch for ch in x if ch not in spec_chars]))
+    df['text'] = df['text'].apply(lambda x: re.sub('\n', ' ', x))
+    df['text'] = df['text'].apply(lambda x: ''.join([ch for ch in x if ch not in string.digits]))
+    print(df.head(2))
+    #tokenize and clean again
+    df['text_tokens'] = df['text'].apply(lambda x: word_tokenize(x))
+    eng_stopwords = stopwords.words("english")
+    df['text_tokens'] = df['text_tokens'].apply(lambda x: [token.strip() for token in x if token not in eng_stopwords])
+    df['text_tokens'] = df['text_tokens'].apply(lambda x: [token.strip() for token in x if len(token) > 2])
+    #df['text_tokens'] = df['text_tokens'].apply(lambda x: nltk.Text(df['text_tokens']))
+    print(df.head(2))
+    # Calculate the frequency distribution
+    df['fdist'] = df['text_tokens'].apply(lambda x: nltk.FreqDist(x).most_common(20))
+
+    # Drop the unnecessary columns and display the first 2 rows
+    df = df.drop(columns=['text', 'text_tokens'])
+    print(df.head(2))
+
+    # Create a new DataFrame for word count
+    new_data = []
+    for index, row in df.iterrows():
+        year = row['year']
+        for word, count in row['fdist']:
+            new_data.append([year, word, count])
+
+    new_df = pd.DataFrame(new_data, columns=['year', 'word', 'count'])
+   
+    return new_df
+
+
+@test
+def test_output(output, *args) -> None:
+    """
+    Template code for testing the output of the block.
+    """
+    assert output is not None, 'The output is undefined'
+
+```
+
+Python block `DATA EXPORTER`, name `save_wordcount`
+```python
+from mage_ai.settings.repo import get_repo_path
+from mage_ai.io.bigquery import BigQuery
+from mage_ai.io.config import ConfigFileLoader
+from pandas import DataFrame
+from os import path
+
+if 'data_exporter' not in globals():
+    from mage_ai.data_preparation.decorators import data_exporter
+
+
+@data_exporter
+def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
+    """
+    Template for exporting data to a BigQuery warehouse.
+    Specify your configuration settings in 'io_config.yaml'.
+
+    Docs: https://docs.mage.ai/design/data-loading#bigquery
+    """
+    table_id = 'coral-firefly-411510.roman_raw.roman_wordcount'
+    config_path = path.join(get_repo_path(), 'io_config.yaml')
+    config_profile = 'dev'
+
+    BigQuery.with_config(ConfigFileLoader(config_path, config_profile)).export(
+        df,
+        table_id,
+        if_exists='replace',  # Specify resolution policy if table name already exists
+    )
+```
 
 ### Step 13: Stop and delete to avoid costs
 
