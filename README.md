@@ -5,7 +5,9 @@ Project for DTC Data Engineering Zoomcamp 2024
 
 The goal of this project is to apply everything we have learned in [the course](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main) to build an end-to-end data pipeline. OK. SPQR.
 
-#### cr1
+#### cr1 
+[Back to Criteria](#cr)
+
 ## Problem description
 
 How often do you think about the Roman Empire?
@@ -56,6 +58,8 @@ You will find below **detailed instructions** for replicating this pipeline from
 
 MIT License.
 
+#### cr7 
+[Back to Criteria](#cr)
 ## Instructions for reproducibility
 
 You will find below **very detailed instructions** for replicating this pipeline from scratch to the dashboard.
@@ -72,9 +76,9 @@ The step-by-step instructions consist of several steps:
   - Step 6: Create SSH key pairs (optional)
   - Step 7: Create SSH config file (optional)
   - Step 8: Install packages on the Virtual Machine (Docker & Mage)
-- Set Up and run pipelines
+- Set Up and run pipeline
   - Step 9: Edit configuration file
-  - Step 10: Build pipelines with Mage
+  - Step 10: Build pipeline with Mage
   - Step 11: dbt development
 - Step 12: Create dashboard for data visualization
 - Step 13: Stop and delete to avoid costs
@@ -256,6 +260,8 @@ Terraform v1.7.0
 on darwin_arm64
 ```
 #### cr2
+[Back to Criteria](#cr)
+
 ### Step 5: Create resources in GCP using Terraform
 
 We will now create the resources in our google cloud project. Instead of creating these resources manually, it is easier to create them programmatically.
@@ -846,7 +852,10 @@ ls -la
 
 I hope everything is ok, let's go and build pipeline!
 
-### Step 10: Build pipelines with Mage
+#### cr3 
+[Back to Criteria](#cr)
+
+### Step 10: Build pipeline with Mage
 
 UI is very simple, but it's better to watch this [very short video](https://www.youtube.com/watch?v=stI-gg4QBnI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20) about example_pipeline (3 min)  and the beginning of [this video](https://www.youtube.com/watch?v=w0XmcASRUnc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24) for understanding, how to build pipeline from scratch (first 3 min).
 
@@ -1249,6 +1258,8 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
         if_exists='replace',  # Specify resolution policy if table name already exists
     )
 ```
+#### cr4 
+[Back to Criteria](#cr)
 
 I've got problems to save python df to BQ with partitioning and clustering, but i need it
 I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example, so I do it.
@@ -1262,6 +1273,9 @@ select * from `roman_raw.roman_sent1`;
 ```
 
 ![s06](pics/s06.png)
+
+#### cr5
+[Back to Criteria](#cr)
 
 And now the last but not the least - dbt!
 #### dbt block `DBT` with name `dbt_exercise`
@@ -1526,6 +1540,9 @@ We have fully automated pipeline!
 
 But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models.
 
+#### cr6
+[Back to Criteria](#cr)
+
 ### Step 12: Create dashboard for data visualization
 
 Now that we have our data, let’s build a dashboard to visualize the data.
@@ -1580,8 +1597,10 @@ terraform destroy
 You can also manually delete your Virtual Environment, Bucket and BigQuery resource and perhaps your Google Cloud project.
 
 
-
+#### cr
 ## Evaluation Criteria
+<details>
+<summary>Expand</summary>
 
 * Problem description
     * 0 points: Problem is not described
@@ -1595,7 +1614,7 @@ You can also manually delete your Virtual Environment, Bucket and BigQuery resou
     * Batch / Workflow orchestration
         * 0 points: No workflow orchestration
         * 2 points: Partial workflow orchestration: some steps are orchestrated, some run manually
-        * 4 points: End-to-end pipeline: multiple steps in the DAG, uploading data to data lake
+        * 4 points: End-to-end pipeline: multiple steps in the DAG, uploading data to data lake [Click](#cr3)
     * Stream
         * 0 points: No streaming system (like Kafka, Pulsar, etc)
         * 2 points: A simple pipeline with one consumer and one producer
@@ -1603,17 +1622,18 @@ You can also manually delete your Virtual Environment, Bucket and BigQuery resou
 * Data warehouse
     * 0 points: No DWH is used
     * 2 points: Tables are created in DWH, but not optimized
-    * 4 points: Tables are partitioned and clustered in a way that makes sense for the upstream queries (with explanation)
+    * 4 points: Tables are partitioned and clustered in a way that makes sense for the upstream queries (with explanation) [Click](#cr4)
 * Transformations (dbt, spark, etc)
     * 0 points: No tranformations
     * 2 points: Simple SQL transformation (no dbt or similar tools)
-    * 4 points: Tranformations are defined with dbt, Spark or similar technologies
+    * 4 points: Tranformations are defined with dbt, Spark or similar technologies [Click](#cr5)
 * Dashboard
     * 0 points: No dashboard
     * 2 points: A dashboard with 1 tile
-    * 4 points: A dashboard with 2 tiles
+    * 4 points: A dashboard with 2 tiles [Click](#cr6)
 * Reproducibility
     * 0 points: No instructions how to run the code at all
     * 2 points: Some instructions are there, but they are not complete
-    * 4 points: Instructions are clear, it's easy to run the code, and the code works
+    * 4 points: Instructions are clear, it's easy to run the code, and the code works [Click](#cr7)
+</details>    
 
