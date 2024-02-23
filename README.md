@@ -5,6 +5,7 @@ Project for DTC Data Engineering Zoomcamp 2024
 
 The goal of this project is to apply everything we have learned in [the course](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main) to build an end-to-end data pipeline. OK. SPQR.
 
+#### cr1
 ## Problem description
 
 How often do you think about the Roman Empire?
@@ -254,7 +255,7 @@ You should see something like this:
 Terraform v1.7.0
 on darwin_arm64
 ```
-
+#### cr2
 ### Step 5: Create resources in GCP using Terraform
 
 We will now create the resources in our google cloud project. Instead of creating these resources manually, it is easier to create them programmatically.
@@ -1250,7 +1251,7 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
 ```
 
 I've got problems to save python df to BQ with partitioning and clustering, but i need it
-I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example^ so I do it.
+I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example, so I do it.
 
 #### Python block `DATA EXPORTER`, name `roman_sent_to_bq`
 ```python
@@ -1534,13 +1535,13 @@ Looker is a tool that helps you explore, share, and visualize your company’s d
 Go to [Looker Studio](https://lookerstudio.google.com/u/0/) and follow these steps:
 
 For example:
-- Create a **Data source**.
-- Select **BigQuery**.
-- **Authorize** Looker Studio to connect to your **BigQuery** project.
-- Select **Project Id** `roman-empire`.
-- Select **Dataset** `roman_dbt_prod`.
-- Select **Table** `fact_roman_news`.
-- Click on **CONNECT** button.
+- Create a **Data source**
+- Select **BigQuery**
+- **Authorize** Looker Studio to connect to your **BigQuery** project
+- Select **Project Id** `roman-empire`
+- Select **Dataset** `roman_dbt_prod`
+- Select **Table** `fact_roman_news`
+- Click on **CONNECT** button
 
 <table>
 <tr><td>
@@ -1577,4 +1578,42 @@ terraform destroy
 ```
 
 You can also manually delete your Virtual Environment, Bucket and BigQuery resource and perhaps your Google Cloud project.
+
+
+
+## Evaluation Criteria
+
+* Problem description
+    * 0 points: Problem is not described
+    * 1 point: Problem is described but shortly or not clearly 
+    * 2 points: Problem is well described and it's clear what the problem the project solves [Click](#cr1)
+* Cloud
+    * 0 points: Cloud is not used, things run only locally
+    * 2 points: The project is developed in the cloud
+    * 4 points: The project is developed in the cloud and IaC tools are used [Click](#cr2)
+* Data ingestion (choose either batch or stream)
+    * Batch / Workflow orchestration
+        * 0 points: No workflow orchestration
+        * 2 points: Partial workflow orchestration: some steps are orchestrated, some run manually
+        * 4 points: End-to-end pipeline: multiple steps in the DAG, uploading data to data lake
+    * Stream
+        * 0 points: No streaming system (like Kafka, Pulsar, etc)
+        * 2 points: A simple pipeline with one consumer and one producer
+        * 4 points: Using consumer/producers and streaming technologies (like Kafka streaming, Spark streaming, Flink, etc)
+* Data warehouse
+    * 0 points: No DWH is used
+    * 2 points: Tables are created in DWH, but not optimized
+    * 4 points: Tables are partitioned and clustered in a way that makes sense for the upstream queries (with explanation)
+* Transformations (dbt, spark, etc)
+    * 0 points: No tranformations
+    * 2 points: Simple SQL transformation (no dbt or similar tools)
+    * 4 points: Tranformations are defined with dbt, Spark or similar technologies
+* Dashboard
+    * 0 points: No dashboard
+    * 2 points: A dashboard with 1 tile
+    * 4 points: A dashboard with 2 tiles
+* Reproducibility
+    * 0 points: No instructions how to run the code at all
+    * 2 points: Some instructions are there, but they are not complete
+    * 4 points: Instructions are clear, it's easy to run the code, and the code works
 
