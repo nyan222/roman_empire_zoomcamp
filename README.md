@@ -35,9 +35,9 @@ This diagram presents the high level architecture of the project.
 
 This is what my final dashboard looks like.
 
-(Temporary unavailable) ![s26](pics/s26.png)
+![s26](pics/s26.png)
 
-(Temporary unavailable) You can view my dashboard [here](https://lookerstudio.google.com/reporting/)
+You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1)
 
 ## Reproducibility
 
@@ -885,7 +885,8 @@ The American Stories dataset is a curated and enhanced version of the same resou
 
 In reality we have 2657 files! That's nice, that dataset grows, and we have to think about it in loader - to load only new files sometimes 
 
-So we have python block `DATA LOADER` with the name `load news` and code below:
+So we have 
+#### Python block `DATA LOADER` with the name `load news` and code below:
 ```python
 from google.cloud import storage
 import requests
@@ -991,9 +992,28 @@ crontab -e
 ```
 And then edit like in vim ( I for insert, Esc for return, :wq for save and quit)
 
+If you don't want problems with deleting parquets, you can use buffer, but then you'll get file_name.parquet as a directory and some ugly name inside. The code should look like this
+```python
+parquet_buffer = io.BytesIO()
+table = pa.Table.from_pandas(df)
+pq.write_table(table, parquet_buffer)
+
+# Upload the Parquet data to Google Cloud Storage with the desired file name
+bucket_name = 'your-bucket-name'
+file_name = 'file.parquet'  # Specify the desired file name
+blob_name = f'destination/{file_name}'
+
+storage_client = storage.Client()
+bucket = storage_client.get_bucket(bucket_name)
+blob = bucket.blob(blob_name)
+parquet_buffer.seek(0)  # Reset the buffer position before uploading
+blob.upload_from_file(parquet_buffer, content_type='application/octet-stream')
+```
+
 We have our data in Data Lake (GCS Bucket) and have to move them to DWH (BigQuery)
 
-Sql block `DATA LOADER`, name `read_all_the_news`, connection here and then - BigQuery - dev - Use raw SQL
+#### Sql block `DATA LOADER`, name `read_all_the_news`
+Connection here and then - BigQuery - dev - Use raw SQL
 ```sql
 -- Docs: https://docs.mage.ai/guides/sql-blocks
 CREATE OR REPLACE EXTERNAL TABLE `roman_raw.external_roman`
@@ -1009,7 +1029,7 @@ select * from `roman_raw.external_roman`;
 
 From here we have two branches:
 
-1. Sql block `DATA EXPORTER`, name `count_empire`
+### 1. Sql block `DATA EXPORTER`, name `count_empire`
 Here we count all the articles by yeaar and the articles, that mentioned Roman Empire
 ```sql
 create or replace table `coral-firefly-411510.roman_raw.roman_count` as 
@@ -1027,7 +1047,7 @@ from `roman_raw.all_news`)
 group by year;
 ```
 
-2. Sql block `TRANSFORMER`, name `empire_news`
+#### 2. Sql block `TRANSFORMER`, name `empire_news`
 We select only Roman Empire news!:)
 ```sql
 create or replace table `coral-firefly-411510.roman_raw.roman_news` as
@@ -1045,14 +1065,14 @@ where lower(text) like '%roman empire%';
 ```
 And read this to use in python blocks
 
-Sql block `TRANSFORMER`, name `select_news`
+#### Sql block `TRANSFORMER`, name `select_news`
 ```sql
 select * from `coral-firefly-411510.roman_raw.roman_news`;
 ```
 
 From here we again have two branches:
 
-2.1 Python block `TRANSFORMER`, name `wordcount`
+#### 2.1 Python block `TRANSFORMER`, name `wordcount`
 I want to have wordcloud at my dashboard, so i need wordcount
 ```python
 import string
@@ -1120,7 +1140,7 @@ def test_output(output, *args) -> None:
 
 ```
 
-Python block `DATA EXPORTER`, name `save_wordcount`
+#### Python block `DATA EXPORTER`, name `save_wordcount`
 ```python
 from mage_ai.settings.repo import get_repo_path
 from mage_ai.io.bigquery import BigQuery
@@ -1150,6 +1170,549 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
         if_exists='replace',  # Specify resolution policy if table name already exists
     )
 ```
+
+#### 2.2 Python block `TRANSFORMER`, name `roman_sentiment`
+We want to know the sentiment of the article
+```python
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+nltk.download('vader_lexicon')
+import pandas as pd
+
+if 'transformer' not in globals():
+    from mage_ai.data_preparation.decorators import transformer
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
+
+
+@transformer
+def transform(data, *args, **kwargs):
+    df = pd.DataFrame(data, columns=['id','date','edition','page','file_name','word_count', 'text','year'])
+    news_list = []
+    for index, news in df.iterrows():
+        #print(news)
+        analyzer = SentimentIntensityAnalyzer().polarity_scores(news.text)
+        neg = analyzer['neg']
+        neu = analyzer['neu']
+        pos = analyzer['pos']
+
+
+        if neg > pos:
+            news['sent'] = 'neg'
+        elif pos > neg:
+            news['sent'] = 'pos'
+        elif pos == neg:
+            news['sent'] = 'neu'
+        #print(news)
+        news_list.append([news.id,news.date,news.edition,news.page,news.file_name,news.word_count, news.text,news.year, news.sent])
+    data = pd.DataFrame(news_list, columns=['id','date','edition','page','file_name','word_count', 'text','year','sent'])
+    return data
+
+
+@test
+def test_output(output, *args) -> None:
+    """
+    Template code for testing the output of the block.
+    """
+    assert output is not None, 'The output is undefined'
+
+```
+
+#### Python block `DATA EXPORTER`, name `roman_sent_to_bq`
+```python
+from mage_ai.settings.repo import get_repo_path
+from mage_ai.io.bigquery import BigQuery
+from mage_ai.io.config import ConfigFileLoader
+from pandas import DataFrame
+from os import path
+
+if 'data_exporter' not in globals():
+    from mage_ai.data_preparation.decorators import data_exporter
+
+
+@data_exporter
+def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
+    """
+    Template for exporting data to a BigQuery warehouse.
+    Specify your configuration settings in 'io_config.yaml'.
+
+    Docs: https://docs.mage.ai/design/data-loading#bigquery
+    """
+    table_id = 'coral-firefly-411510.roman_raw.roman_sent1'
+    config_path = path.join(get_repo_path(), 'io_config.yaml')
+    config_profile = 'dev'
+
+    BigQuery.with_config(ConfigFileLoader(config_path, config_profile)).export(
+        df,
+        table_id,
+        if_exists='replace',  # Specify resolution policy if table name already exists
+    )
+
+```
+
+I've got problems to save python df to BQ with partitioning and clustering, but i need it
+I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example
+
+#### Python block `DATA EXPORTER`, name `roman_sent_to_bq`
+```python
+create or replace table `coral-firefly-411510.roman_raw.roman_sent` 
+PARTITION BY DATE_TRUNC(date,YEAR)
+CLUSTER BY word_count AS
+select * from `roman_raw.roman_sent1`;
+```
+
+And now the last but not the least - dbt!
+#### dbt block `DBT` with name `dbt_exercise`
+
+![dbt](pics/dbt.png)
+
+and all the log
+```bash
+INFO:dbt_exercise_test:dbt deps \
+
+    --project-dir /home/src/**************/dbt/dbt_cloud \
+
+    --vars {"env": "dev", "execution_date": "2024-02-23T19:21:09.721620", "interval_start_datetime": "2024-02-23T19:21:09.721620", "event": {}, "configuration": {"data_provider": "bigquery", "data_provider_profile": "dev", "dbt": {"command": "run"}, "dbt_profile_target": "prod", "dbt_project_name": "dbt/dbt_cloud", "disable_query_preprocessing": false, "export_write_policy": "append", "file_source": {"path": "dbts/dbt_exercise.yaml"}, "use_raw_sql": false}, "context": {}, "pipeline_uuid": "news_to_bq", "block_uuid": "dbt_exercise"} \
+
+    --target prod \
+
+    --profiles-dir /home/src/**************/.profiles_interpolated_temp_39e7cc77-2e44-4e70-a353-8e50927612d0
+
+ 
+
+19:21:09  Running with dbt=1.7.4
+
+ 
+
+INFO:dbt_exercise_test:Running with dbt=1.7.4
+
+ 
+
+19:21:09  Installing dbt-labs/dbt_utils
+
+ 
+
+INFO:dbt_exercise_test:Installing dbt-labs/dbt_utils
+
+ 
+
+19:21:10  Installed from version 1.1.1
+
+ 
+
+INFO:dbt_exercise_test:Installed from version 1.1.1
+
+ 
+
+19:21:10  Up to date!
+
+ 
+
+INFO:dbt_exercise_test:Up to date!
+
+ 
+
+19:21:10  Installing dbt-labs/codegen
+
+ 
+
+INFO:dbt_exercise_test:Installing dbt-labs/codegen
+
+ 
+
+19:21:11  Installed from version 0.12.1
+
+ 
+
+INFO:dbt_exercise_test:Installed from version 0.12.1
+
+ 
+
+19:21:11  Up to date!
+
+ 
+
+INFO:dbt_exercise_test:Up to date!
+
+ 
+
+19:21:11  Installing calogica/dbt_date
+
+ 
+
+INFO:dbt_exercise_test:Installing calogica/dbt_date
+
+ 
+
+19:21:11  Installed from version 0.9.2
+
+ 
+
+INFO:dbt_exercise_test:Installed from version 0.9.2
+
+ 
+
+19:21:11  Updated version available: 0.10.0
+
+ 
+
+INFO:dbt_exercise_test:Updated version available: 0.10.0
+
+ 
+
+19:21:11  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:11  Updates available for packages: ['calogica/dbt_date']                 
+
+Update your versions in packages.yml, then run dbt deps
+
+ 
+
+INFO:dbt_exercise_test:Updates available for packages: ['calogica/dbt_date']                 
+
+Update your versions in packages.yml, then run dbt deps
+
+ 
+
+INFO:dbt_exercise_test:dbt run \
+
+    --project-dir /home/src/**************/dbt/dbt_cloud \
+
+    --vars {"env": "dev", "execution_date": "2024-02-23T19:21:09.721620", "interval_start_datetime": "2024-02-23T19:21:09.721620", "event": {}, "configuration": {"data_provider": "bigquery", "data_provider_profile": "dev", "dbt": {"command": "run"}, "dbt_profile_target": "prod", "dbt_project_name": "dbt/dbt_cloud", "disable_query_preprocessing": false, "export_write_policy": "append", "file_source": {"path": "dbts/dbt_exercise.yaml"}, "use_raw_sql": false}, "context": {}, "pipeline_uuid": "news_to_bq", "block_uuid": "dbt_exercise"} \
+
+    --target prod \
+
+    --profiles-dir /home/src/**************/.profiles_interpolated_temp_39e7cc77-2e44-4e70-a353-8e50927612d0
+
+ 
+
+19:21:12  Running with dbt=1.7.4
+
+ 
+
+INFO:dbt_exercise_test:Running with dbt=1.7.4
+
+ 
+
+19:21:12  Registered adapter: bigquery=1.7.2
+
+ 
+
+INFO:dbt_exercise_test:Registered adapter: bigquery=1.7.2
+
+ 
+
+19:21:12  Unable to do partial parsing because config vars, config profile, or config target have changed
+
+ 
+
+INFO:dbt_exercise_test:Unable to do partial parsing because config vars, config profile, or config target have changed
+
+ 
+
+19:21:13  Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
+
+ 
+
+INFO:dbt_exercise_test:Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
+
+ 
+
+19:21:13  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:14  Concurrency: 4 threads (target='prod')
+
+ 
+
+INFO:dbt_exercise_test:Concurrency: 4 threads (target='prod')
+
+ 
+
+19:21:14  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:14  1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
+
+ 
+
+19:21:14  2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
+
+ 
+
+19:21:15  2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
+
+ 
+
+INFO:dbt_exercise_test:2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
+
+ 
+
+19:21:15  3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
+
+ 
+
+19:21:15  4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
+
+ 
+
+19:21:15  5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
+
+ 
+
+19:21:15  1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
+
+ 
+
+INFO:dbt_exercise_test:1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
+
+ 
+
+19:21:15  6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
+
+ 
+
+INFO:dbt_exercise_test:6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
+
+ 
+
+19:21:19  6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
+
+ 
+
+INFO:dbt_exercise_test:6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
+
+ 
+
+19:21:19  4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
+
+ 
+
+INFO:dbt_exercise_test:4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
+
+ 
+
+19:21:19  3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
+
+ 
+
+INFO:dbt_exercise_test:3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
+
+ 
+
+19:21:54  5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
+
+ 
+
+INFO:dbt_exercise_test:5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
+
+ 
+
+19:21:54  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:54  Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
+
+ 
+
+INFO:dbt_exercise_test:Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
+
+ 
+
+19:21:54  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:54  Completed successfully
+
+ 
+
+INFO:dbt_exercise_test:Completed successfully
+
+ 
+
+19:21:54  
+
+ 
+
+INFO:dbt_exercise_test:
+
+ 
+
+19:21:54  Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
+
+ 
+
+INFO:dbt_exercise_test:Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
+
+```
+Nice!!!
+The project is here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/dbt/dbt_cloud` (and the same path is in github)
+
+It works, because we have our `profiles.yml` in the directory above, as it was said in the [Mage instruction](https://docs.mage.ai/dbt/add-existing-dbt)
+
+It looks like:
+```yaml
+bq_dbt:
+  outputs:
+    prod:
+      dataset: roman_dbt_prod
+      fixed_retries: 1
+      keyfile: /home/src/cfk.json
+      location: us-west1
+      method: service-account
+      priority: interactive
+      project: coral-firefly-411510 
+      threads: 4
+      timeout_seconds: 300
+      type: bigquery
+  target: prod  
+```
+Note the target `prod`, we use it in the block, and name `bq_dbt` - we use it in `dbt_project.yml`:
+```yaml
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'dbt_cloud'
+version: '1.0.0'
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'bq_dbt'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"  # directory which will store compiled SQL files
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+# In dbt, the default materialization for a model is a view. This means, when you run 
+# dbt run or dbt build, all of your models will be built as a view in your data platform. 
+# The configuration below will override this setting for models in the example folder to 
+# instead be materialized as tables. Any models you add to the root of the models folder will 
+# continue to be built as views. These settings can be overridden in the individual model files
+# using the `{{ config(...) }}` macro.
+
+models:
+  dbt_cloud:
+      # Applies to all files under models/.../
+      staging:
+          materialized: view
+      core:
+          materialized: table
+```
+
+In the project we have only models and one macro, they are very simple, but for exercise and dashboard it's enough
+
+So we have a pipeline, and we should set trigger to run it every week:
+
+Triggers (left panel) -- New Trigger -- Schedule -- Frequency: Weekly and any time you like -- green button Enable trigger -- that's all!
+We have fully automated pipeline!
+
+### Step 11: dbt development
+
+But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models
+
+### Step 12: Create dashboard for data visualization
+
+Now that we have our data, let’s build a dashboard to visualize the data.
+
+Looker is a tool that helps you explore, share, and visualize your company’s data so that you can make better business
+decisions.
+
+Go to [Looker Studio](https://lookerstudio.google.com/u/0/) and follow these steps:
+
+For example:
+- Create a **Data source**.
+- Select **BigQuery**.
+- **Authorize** Looker Studio to connect to your **BigQuery** project.
+- Select **Project Id** `roman-empire`.
+- Select **Dataset** `roman_dbt_prod`.
+- Select **Table** `fact_roman_news`.
+- Click on **CONNECT** button.
+
+<table>
+<tr><td>
+<img src="pics/s07.png">
+</td><td>
+<img src="pics/s08.png">
+</td></tr>
+</table>
+
+And then add all other tbles from `roman_dbt_prod` and `roman_raw`
+
+Click on **CREATE REPORT** button.
+(Add data - My data sources!)
+
+You can now feel free to create some visualisations.
+
+Looker tutorials can be found [here](https://cloud.google.com/looker/docs/intro).
+And of cause we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the zoomcamp - 20 minutes for all cases!
+
+This is what my final dashboard looks like.
+
+![s26](pics/s26.png)
+
+You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1)
 
 ### Step 13: Stop and delete to avoid costs
 
