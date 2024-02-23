@@ -95,6 +95,8 @@ This repository (<https://github.com/nyan222/roman_empire_zoomcamp>) contains fo
 - `pics`: this folder contains pictures for this README
 
 ### Step 1: Create a new project in Google Cloud Platform
+<details>
+<summary>Expand</summary>
 
 If you do not have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
 completed using only the services included in the GCP [free tier](https://cloud.google.com/free/).
@@ -111,9 +113,11 @@ Go to [Compute Engine API](https://console.cloud.google.com/apis/library/compute
 ![ce](pics/ce.jpg)
 
 This operation may take some minutes.
-
+</details>
 
 ### Step 2: Install Google Cloud CLI
+<details>
+<summary>Expand</summary>
 
 The [Google Cloud CLI](https://cloud.google.com/sdk/gcloud) (gcloud CLI) is a set of tools to create and manage Google Cloud resources. You can use these tools to perform many common platform tasks from the command line or through scripts and other automation.
 
@@ -149,8 +153,11 @@ And then run:
 ```bash
 source ~/.zshrc
 ```
+</details>
 
 ### Step 3: Configure permissions for GCP services (with service account and it's key)
+<details>
+<summary>Expand</summary>
 
 There is nice step-by-step instruction from Google, [how to create service account with console or CLI](https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-console).
 
@@ -237,8 +244,11 @@ gcloud auth application-default login
 **Google Auth Library** will ask you for permission to access your Google Account. Click on **Allow** button.
 
 Congratulations! You are now authenticated with the gcloud CLI!
+</details>
 
 ### Step 4: Install Terraform
+<details>
+<summary>Expand</summary>
 
 [Terraform](https://developer.hashicorp.com/terraform/intro) is an infrastructure as code tool that lets you build,
 change, and version cloud and on-prem resources safely and efficiently.
@@ -259,10 +269,14 @@ You should see something like this:
 Terraform v1.7.0
 on darwin_arm64
 ```
+</details>
+
 #### cr2
 [Back to Criteria](#cr)
 
 ### Step 5: Create resources in GCP using Terraform
+<details>
+<summary>Expand</summary>
 
 We will now create the resources in our google cloud project. Instead of creating these resources manually, it is easier to create them programmatically.
 
@@ -576,8 +590,11 @@ In the Google Cloud console, on the left menu, go to the **Big Query**. You shol
 ![bq](pics/bq.png)
 
 If these three services are created, everything is fine and we can move on to the next step.
+</details>
 
 ### Step 6: Create SSH key pairs (optional)
+<details>
+<summary>Expand</summary>
 
 Note!: In any case it would be nice to see again the lecture [DE Zoomcamp 1.4.1 - Setting up the Environment on Google Cloud (Cloud VM + SSH access)](https://www.youtube.com/watch?v=ae-CV2KfoN0).
 
@@ -617,8 +634,11 @@ Here, a trick to copy the contents of your public `KEY_FILENAME.pub` file. Just 
 ``` bash
 cat ~/.ssh/KEY_FILENAME.pub | pbcopy
 ```
+</details>
 
 ### Step 7: Create SSH config file (optional)
+<details>
+<summary>Expand</summary>
 
 Next, create a file `~/.ssh/config` on your local machine:
 
@@ -699,9 +719,11 @@ ssh -i ~/.ssh/gcp USERNAME@EXTERNAL_IP
 ```
 
 Where `USERNAME` is your username on the VM and `EXTERNAL_IP` is the external IP of the VM.
-
+</details>
 
 ### Step 8: Install packages on the Virtual Machine
+<details>
+<summary>Expand</summary>
 
 First of all we have to install Docker!
 
@@ -805,8 +827,11 @@ pip install -U pip setuptools wheel
 ```
 
 After that, you have a conda environment `myenv` with all required libraries installed.
+</details>
 
 ### Step 9: Edit configuration file
+<details>
+<summary>Expand</summary>
 
 Next, you’ll need to create a configuration file with your details for the orchestration workflow.
 
@@ -851,11 +876,14 @@ ls -la
 ![mgt](pics/mgt.png)
 
 I hope everything is ok, let's go and build pipeline!
+</details>
 
 #### cr3 
 [Back to Criteria](#cr)
 
 ### Step 10: Build pipeline with Mage
+<details>
+<summary>Expand</summary>
 
 UI is very simple, but it's better to watch this [very short video](https://www.youtube.com/watch?v=stI-gg4QBnI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20) about example_pipeline (3 min)  and the beginning of [this video](https://www.youtube.com/watch?v=w0XmcASRUnc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24) for understanding, how to build pipeline from scratch (first 3 min).
 
@@ -1535,15 +1563,23 @@ So we have a pipeline, and we should set trigger to run it every week:
 
 Triggers (left panel) -- New Trigger -- Schedule -- Frequency: Weekly and any time you like -- green button Enable trigger -- that's all!
 We have fully automated pipeline!
+</details>
 
 ### Step 11: dbt development
+<details>
+<summary>Expand</summary>
 
 But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models.
+
+
+</details>
 
 #### cr6
 [Back to Criteria](#cr)
 
 ### Step 12: Create dashboard for data visualization
+<details>
+<summary>Expand</summary>
 
 Now that we have our data, let’s build a dashboard to visualize the data.
 
@@ -1583,8 +1619,11 @@ This is what my final dashboard looks like:
 ![s26](pics/s26.png)
 
 You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
+</details>
 
 ### Step 13: Stop and delete to avoid costs
+<details>
+<summary>Expand</summary>
 
 To avoid incurring unnecessary charges to your GCP account, destroy all remote objects managed by a our Terraform configuration.
 
@@ -1595,7 +1634,7 @@ terraform destroy
 ```
 
 You can also manually delete your Virtual Environment, Bucket and BigQuery resource and perhaps your Google Cloud project.
-
+</details>
 
 #### cr
 ## Evaluation Criteria
