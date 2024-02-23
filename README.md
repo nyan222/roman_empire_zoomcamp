@@ -11,13 +11,13 @@ How often do you think about the Roman Empire?
 
 All my schoolmates and me think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of cause the ancient. And when this meme became popular (wiki says in in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
 
-In this project I want to think about the Roman Empire with authors and readers of newspapers since 1690 to 1963;)
+In this project I want to think about the Roman Empire with authors and readers of newspapers since 1690 to 1963;).
 
-I really want to know timeline of thinking about the Roman Empire and sentiment of messages, to see word cloud of article's content
+I really want to know timeline of thinking about the Roman Empire and sentiment of messages, to see word cloud of article's content and average length of the artice.
 
 ## Project architecture
 
-Data comes from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers)
+Data comes from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers).
 
 The whole process is orchestrated by the workflow orchestration engine [Mage](https://docs.mage.ai/introduction/overview). It also has dbt blocks!
 
@@ -33,11 +33,11 @@ This diagram presents the high level architecture of the project.
 
 ## Dashboard
 
-This is what my final dashboard looks like.
+This is what my final dashboard looks like:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1)
+You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 
 ## Reproducibility
 
@@ -46,10 +46,10 @@ You will find below **detailed instructions** for replicating this pipeline from
 ## Future work
 
 - Try all this with another popular Cloud, that accept my cards:)
-- Make incremental model, to append only the latest data from each load.
-- Documentation and data quality tests in dbt.
+- Make incremental model, to append only the latest data from each load
+- Documentation and data quality tests in dbt
 - Try Spark transformations instead of dbt
-- Try Streaming process with Kafka and Spark.
+- Try Streaming process with Kafka and Spark
 
 ## License
 
@@ -94,10 +94,10 @@ This repository (<https://github.com/nyan222/roman_empire_zoomcamp>) contains fo
 If you do not have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
 completed using only the services included in the GCP [free tier](https://cloud.google.com/free/).
 
-Unfortunnaly, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card could not be virtual. So nice working antifraud algorithm. So simple for some countries:((
+Unfortunnaly, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card could not be virtual. Google has so nice working antifraud algorithm. So simple for some countries:((
 GCP states that it will not charge you unless you explicitly end your free-trial period, but be careful. But it was clearly indicated when registering: No autocharge after free trial ends. But you should always be careful:)
 
-Once you’ve created the account, logging into [Google Cloud Platform (GCP) console](https://console.cloud.google.com).
+Once you’ve created the account, log into [Google Cloud Platform (GCP) console](https://console.cloud.google.com).
 
 [Create a new project](https://console.cloud.google.com/projectcreate) in the GCP console. Name this new project `roman-empire`. Make note of the **project ID** (mine is `coral-firefly-411510`). For subsequent steps, you will need to replace the `PROJECT_ID` with your own **project ID**.
 
@@ -112,8 +112,7 @@ This operation may take some minutes.
 
 The [Google Cloud CLI](https://cloud.google.com/sdk/gcloud) (gcloud CLI) is a set of tools to create and manage Google Cloud resources. You can use these tools to perform many common platform tasks from the command line or through scripts and other automation.
 
-Go to [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install), choose your Operating System (OS), and follow
-the installation instructions to install gcloud CLI on your local machine.
+Go to [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install), choose your Operating System (OS), and follow the installation instructions to install gcloud CLI on your local machine.
 
 Confirm that gcloud is installed with `gcloud -v`.
 
@@ -131,7 +130,7 @@ gcloud-crc32c 1.0.0
 gsutil 5.27
 ```
 
-If there is a problem, add path to your shell manually, my shell is here - ~/.zshrc, with some editor, I'm ok with vim, but you can better edit it with vscode
+If there is a problem, add path to your shell manually, my shell is here - ~/.zshrc, with some editor, I'm ok with vim, but you can better edit it with vscode.
 
 ```bash
 # The next line updates PATH for the Google Cloud SDK.
@@ -149,15 +148,15 @@ source ~/.zshrc
 
 ### Step 3: Configure permissions for GCP services (with service account and it's key)
 
-There is nice step-by-step instruction from Google, [how to create service account with console or CLI](https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-console)
+There is nice step-by-step instruction from Google, [how to create service account with console or CLI](https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-console).
 
-See also an article [Understanding Service accounts](https://cloud.google.com/iam/docs/understanding-service-accounts)
+See also an article [Understanding Service accounts](https://cloud.google.com/iam/docs/understanding-service-accounts).
 
 The course shows, that we have to have these roles:
 
 ![sar](pics/sar.png)
 
-In console you schould add it by hands, following the instruction, but if you are ok with roles' names, you can use CLI
+In console you schould add it by hands, following the instruction, but if you are ok with roles' names, you can use CLI.
 
 From your local machine, run the following command.
 
@@ -216,7 +215,7 @@ gcloud iam service-accounts keys create ~/.config/gcloud/cfk.json \
 ```
 (cfk means coral-firefly-key:)
 
-You also can get the key from [console](https://cloud.google.com/iam/docs/keys-create-delete)
+You also can get the key from [console](https://cloud.google.com/iam/docs/keys-create-delete).
 
 Please be careful with git!!! Use *.json in every .gitignore you have, the key shoud not get to repository. Everyone who get it can use your cloud resources.
 
@@ -244,13 +243,13 @@ Go to [Install Terraform](https://developer.hashicorp.com/terraform/downloads?pr
 
 If you had difficulties with creating billing account for GCP, you could have problems with terraform site and then with terraform init, please use vpn.
 
-Confirm that Terraform is installed with `terraform -version`.
+Confirm that Terraform is installed with `terraform -version`:
 
 ``` txt
 terraform -version
 ```
 
-You should see something like this.
+You should see something like this:
 
 ``` txt
 Terraform v1.7.0
@@ -306,7 +305,7 @@ Save and close the `roman_empire_zoomcamp/terraform/variables.tf` file.
 
 When you create a new configuration with Terraform, you need to initialize the directory.
 
-From your local machine, run [terraform init](https://www.terraform.io/docs/commands/init.html) to initialize the working directory.
+From your local machine, run [terraform init](https://www.terraform.io/docs/commands/init.html) to initialize the working directory:
 
 ``` bash
 cd
@@ -314,7 +313,7 @@ cd roman_empire_zoomcamp/terraform/
 terraform init
 ```
 
-You should see this.
+You should see this:
 
 ``` bash
 Initializing the backend...
@@ -345,20 +344,19 @@ commands will detect it and remind you to do so if necessary.
 
 Remember about vpn if you face difficulties.
 
-Next, run [terraform validate](https://www.terraform.io/docs/commands/validate.html) to validate Terraform configuration
-files on the local machine.
+Next, run [terraform validate](https://www.terraform.io/docs/commands/validate.html) to validate Terraform configuration files on the local machine:
 
 ``` bash
 terraform validate
 ```
 
-You should see this.
+You should see this:
 
 ```bash
 Success! The configuration is valid.
 ```
 
-Next, run [terraform plan](https://developer.hashicorp.com/terraform/cli/commands/plan) to validate that Terraform configuration files from a remote services perspective.
+Next, run [terraform plan](https://developer.hashicorp.com/terraform/cli/commands/plan) to validate that Terraform configuration files from a remote services perspective:
 
 ``` bash
 terraform plan
@@ -366,7 +364,7 @@ terraform plan
 
 Terraform will indicate what infrastructure changes it plans to make.
 
-You should see this.
+You should see this:
 
 ```bash
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following
@@ -539,7 +537,7 @@ Respond to the confirmation prompt with a `yes`.
 
 The last two commands may take some times to run.
 
-After that, you should see somethig like this in your terminal.
+After that, you should see somethig like this in your terminal:
 
 ``` bash
 google_bigquery_dataset.datasets["roman_dbt_dev"]: Creating...
@@ -577,15 +575,13 @@ If these three services are created, everything is fine and we can move on to th
 
 Note!: In any case it would be nice to see again the lecture [DE Zoomcamp 1.4.1 - Setting up the Environment on Google Cloud (Cloud VM + SSH access)](https://www.youtube.com/watch?v=ae-CV2KfoN0).
 
-In order to avoid typing the password each time to connect to the VM from the local machine, you can create an SSH key
-pairs on the local machine.
+In order to avoid typing the password each time to connect to the VM from the local machine, you can create an SSH key pairs on the local machine.
 
 Follow the instructions below according to your Operating System (OS).
 
 #### Linux and macOS
 
-For Linux and macOS, run the following command. Replace the `USERNAME` on your computer. Replace also `KEY_FILENAME`
-with a more common filename like `my-ssh-key`.
+For Linux and macOS, run the following command. Replace the `USERNAME` on your computer. Replace also `KEY_FILENAME` with a more common filename like `my-ssh-key`.
 
 ``` bash
 ssh-keygen -t rsa -f ~/.ssh/KEY_FILENAME -C USERNAME -b 2048
@@ -595,11 +591,9 @@ ssh-keygen -t rsa -f ~/.ssh/KEY_FILENAME -C USERNAME -b 2048
 
 #### Windows 10 or later
 
-For Windows 10 or later, see these
-[instructions](https://cloud.google.com/compute/docs/connect/create-ssh-keys#windows-10-or-later).
+For Windows 10 or later, see these [instructions](https://cloud.google.com/compute/docs/connect/create-ssh-keys#windows-10-or-later).
 
-`ssh-keygen` saves your private key file to `C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME` and your public key file to
-`C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME.pub`.
+`ssh-keygen` saves your private key file to `C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME` and your public key file to `C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME.pub`.
 
 #### Add SSH keys to VM
 
@@ -620,13 +614,13 @@ cat ~/.ssh/KEY_FILENAME.pub | pbcopy
 
 ### Step 7: Create SSH config file (optional)
 
-Next, create a file `~/.ssh/config` on your local machine.
+Next, create a file `~/.ssh/config` on your local machine:
 
 ``` bash
 touch ~/.ssh/config
 ```
 
-Edit the file et add this content.
+Edit the file et add this content:
 
 ``` bash
 Host roman-empire
@@ -649,7 +643,7 @@ ssh roman-empire
 
 Respond to the confirmation prompt with a `yes`.
 
-Nicevi! You should see this something like this.
+Nicevi! You should see this something like this:
 
 ``` txt
 The authenticity of host 'XXX.XXX.XXX.XXX (XXX.XXX.XXX.XXX)' can't be established.
@@ -715,10 +709,9 @@ sudo gpasswd -a $USER docker
 sudo service docker restart
 logout
 ```
-And then again `ssh roman-empire`
+And then again `ssh roman-empire`.
 
-And we need also docker compose, we can choose best version [here](https://github.com/docker/compose)
-
+And we need also docker compose, we can choose best version [here](https://github.com/docker/compose).
 
 ```bash
 mkdir bin
@@ -733,13 +726,12 @@ cd
 vim .bashrc
 ```
 
-Then we should add this in .bashrc file (I for Insert, Escape to return, :wq - save and exit)
+Then we should add this in .bashrc file (I for Insert, Escape to return, :wq - save and exit):
 ```bash
 export PATH="${HOME}/bin:${PATH}"
 ```
 
 And then we return to cli:
-
 ```bash
 source .bashrc
 which docker-compose
@@ -750,11 +742,10 @@ docker-compose version
 
 So now we need our workflow orchestrator Mage.
 
-Everything for quick start can be found here - so nice and short and clear [videos](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/02-workflow-orchestration)
+Everything for quick start can be found here - so nice and short and clear [videos](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/02-workflow-orchestration).
 
-But I've copied my DEZoomcamp Mage Project with some additions and examples just to reuse when developing
 
-We should clone [the repository of Roman Empire Project](https://github.com/nyan222/roman_empire_zoomcamp.git) to VM
+We should clone [the repository of Roman Empire Project](https://github.com/nyan222/roman_empire_zoomcamp.git) to VM:
 ```bash
 cd
 git clone https://github.com/nyan222/roman_empire_zoomcamp.git
@@ -771,7 +762,7 @@ CONTAINER ID   IMAGE                  COMMAND                  CREATED          
 7e13e665feeb   postgres:14            "docker-entrypoint.s…"   About a minute ago   Up 56 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp             magic-roman-postgres
 ```
 
-And now we need to put Google service account key to our mage project
+And now we need to put Google service account key to our mage project.
 
 Do it from your local machine.
 Note!!!: yuo shoud begin from directory, where the key lies and act quickly!
@@ -782,7 +773,6 @@ put cfk.json
 ```
 
 For some debugging things we can  install Anaconda for Linux, but it's optional.
-
 
 Best for you version to install your can find [here](https://www.anaconda.com/download#downloads)
 
@@ -795,7 +785,7 @@ source ~/anaconda3/bin/activate
 source ~/.bashrc
 ```
 
-Still on your VM instance, run the following commands to create a conda environment and install necessary packages.
+Still on your VM instance, run the following commands to create a conda environment and install necessary packages:
 
 ``` bash
 cd
@@ -836,13 +826,13 @@ dev:
   GOOGLE_LOCATION: us-west1 # Optional
 ```
 
-Note the name of the environment! (dev)
+Note the name of the environment (dev) !!!
 
-To get Mage interface on local machine we shoul throw port from VSCode (this works, another methods not ok in my f**king network)
+To get Mage interface on local machine we shoul throw port from VSCode (this works, another methods not ok in my f**king network).
 
 In VS Code, go to the **Command Palette** (`Shift+Cmd+P`), select **Remote-SSH: Connect to Host…​**, and select your VM `roman-empire`.
 
-You will get your own VS Code window, connected to you server, and will be able to throw port (manually)
+You will get your own VS Code window, connected to you server, and will be able to throw port (manually):
 
 ![trp](pics/trp.png)
 
@@ -858,21 +848,21 @@ I hope everything is ok, let's go and build pipeline!
 
 ### Step 10: Build pipelines with Mage
 
-UI is very simple, but it's better to watch this [very short video](https://www.youtube.com/watch?v=stI-gg4QBnI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20) about example_pipeline (3 min)  and the beginning of [this video](https://www.youtube.com/watch?v=w0XmcASRUnc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24) for understanding, how to build pipeline from scratch (first 3 min)
+UI is very simple, but it's better to watch this [very short video](https://www.youtube.com/watch?v=stI-gg4QBnI&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=20) about example_pipeline (3 min)  and the beginning of [this video](https://www.youtube.com/watch?v=w0XmcASRUnc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=24) for understanding, how to build pipeline from scratch (first 3 min).
 
 In reality you should press the button New pipeline, then Edit to change the name, and then choose a module.
-But we have already two pipelines - `example_pipeline` from Mage and our `news_to_bq`
+But we have already two pipelines - `example_pipeline` from Mage and our `news_to_bq`.
 
-So lets go to pipelines (left menu) --> `news_to_bq`
+So lets go to pipelines (left menu) --> `news_to_bq`:
 
 ![ntb](pics/ntb.png)
 
-And let's see all the blocks of the pipeline
+And let's see all the blocks of the pipeline:
 
 ![ppl](pics/ppl.png)
 
-First we have to load our data
-Of cause I wanted to get modern data from twitter-x or insta, but snscraper does not work anymore, so we have nice dataset from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers)
+First we have to load our data.
+Of cause I wanted to get modern data from twitter-x or insta, but snscraper does not work anymore, so we have nice dataset from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers).
 
 ```text
 Content
@@ -883,9 +873,10 @@ The collection was compiled by Pierre-Carl Langlais based on the dumps made avai
 The American Stories dataset is a curated and enhanced version of the same resource, with significant progress in regards to text quality and documentation. It currently retains about 20% of the original material.
 ```
 
-In reality we have 2657 files! That's nice, that dataset grows, and we have to think about it in loader - to load only new files sometimes 
+In reality we have 2657 files! That's nice, that dataset grows, and we have to think about it in loader - to load only new files sometimes.
 
-So we have 
+So we have:
+
 #### Python block `DATA LOADER` with the name `load news` and code below:
 ```python
 from google.cloud import storage
@@ -979,10 +970,9 @@ def test_output(output, *args) -> None:
     Template code for testing the output of the block.
     """
     assert output is not None, 'The output is undefined'
-
 ```
 
-Nice! There are only two things - loader works for about a day and you should delete local *.parquet files from `~/roman_empire_zoomcamp/mage-empire/magic-roman/`. On the first start with 2657 files you have to do it manually, just not to delete that very parquet, that we load to gcs storage right now, and for other runs we have to put in crontab this line
+Nice! There are only two things - loader works for about a day and you should delete local *.parquet files from `~/roman_empire_zoomcamp/mage-empire/magic-roman/`. On the first start with 2657 files you have to do it manually, just not to delete that very parquet, that we load to gcs storage right now, and for other runs we have to put in crontab this line:
 ```bash
 ~/roman_empire_zoomcamp/mage-empire/*.parquet -type f -mtime +1 -exec rm {} +
 ```
@@ -990,9 +980,9 @@ To edit crontab ([Crontab Quick Start](https://help.ubuntu.com/community/CronHow
 ```bash
 crontab -e
 ```
-And then edit like in vim ( I for insert, Esc for return, :wq for save and quit)
+And then edit like in vim ( I for insert, Esc for return, :wq for save and quit).
 
-If you don't want problems with deleting parquets, you can use buffer, but then you'll get file_name.parquet as a directory and some ugly name inside. The code should look like this
+If you don't want problems with deleting parquets, you can use buffer, but then you'll get file_name.parquet as a directory and some ugly name inside. The code should look like this:
 ```python
 parquet_buffer = io.BytesIO()
 table = pa.Table.from_pandas(df)
@@ -1010,10 +1000,10 @@ parquet_buffer.seek(0)  # Reset the buffer position before uploading
 blob.upload_from_file(parquet_buffer, content_type='application/octet-stream')
 ```
 
-We have our data in Data Lake (GCS Bucket) and have to move them to DWH (BigQuery)
+We have our data in Data Lake (GCS Bucket) and have to move them to DWH (BigQuery).
 
 #### Sql block `DATA LOADER`, name `read_all_the_news`
-Connection here and then - BigQuery - dev - Use raw SQL
+(Connection here and then - BigQuery - dev - Use raw SQL)
 ```sql
 -- Docs: https://docs.mage.ai/guides/sql-blocks
 CREATE OR REPLACE EXTERNAL TABLE `roman_raw.external_roman`
@@ -1137,7 +1127,6 @@ def test_output(output, *args) -> None:
     Template code for testing the output of the block.
     """
     assert output is not None, 'The output is undefined'
-
 ```
 
 #### Python block `DATA EXPORTER`, name `save_wordcount`
@@ -1215,7 +1204,6 @@ def test_output(output, *args) -> None:
     Template code for testing the output of the block.
     """
     assert output is not None, 'The output is undefined'
-
 ```
 
 #### Python block `DATA EXPORTER`, name `roman_sent_to_bq`
@@ -1247,11 +1235,10 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
         table_id,
         if_exists='replace',  # Specify resolution policy if table name already exists
     )
-
 ```
 
 I've got problems to save python df to BQ with partitioning and clustering, but i need it
-I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example
+I need partitioning by year, it's obvious, and clustering by word_count, if i need 5 shortest articles to print for example^ so I do it.
 
 #### Python block `DATA EXPORTER`, name `roman_sent_to_bq`
 ```python
@@ -1266,7 +1253,7 @@ And now the last but not the least - dbt!
 
 ![dbt](pics/dbt.png)
 
-and all the log
+And all the log:
 ```bash
 INFO:dbt_exercise_test:dbt deps \
 
@@ -1278,109 +1265,59 @@ INFO:dbt_exercise_test:dbt deps \
 
     --profiles-dir /home/src/**************/.profiles_interpolated_temp_39e7cc77-2e44-4e70-a353-8e50927612d0
 
- 
+ 19:21:09  Running with dbt=1.7.4
 
-19:21:09  Running with dbt=1.7.4
+ INFO:dbt_exercise_test:Running with dbt=1.7.4
 
- 
+ 19:21:09  Installing dbt-labs/dbt_utils
 
-INFO:dbt_exercise_test:Running with dbt=1.7.4
+ INFO:dbt_exercise_test:Installing dbt-labs/dbt_utils
 
- 
-
-19:21:09  Installing dbt-labs/dbt_utils
-
- 
-
-INFO:dbt_exercise_test:Installing dbt-labs/dbt_utils
-
- 
-
-19:21:10  Installed from version 1.1.1
-
- 
+ 19:21:10  Installed from version 1.1.1
 
 INFO:dbt_exercise_test:Installed from version 1.1.1
 
- 
+ 19:21:10  Up to date!
 
-19:21:10  Up to date!
+ INFO:dbt_exercise_test:Up to date!
 
- 
+ 19:21:10  Installing dbt-labs/codegen
 
-INFO:dbt_exercise_test:Up to date!
+ INFO:dbt_exercise_test:Installing dbt-labs/codegen
 
- 
+ 19:21:11  Installed from version 0.12.1
 
-19:21:10  Installing dbt-labs/codegen
+ INFO:dbt_exercise_test:Installed from version 0.12.1
 
- 
+ 19:21:11  Up to date!
 
-INFO:dbt_exercise_test:Installing dbt-labs/codegen
+ INFO:dbt_exercise_test:Up to date!
 
- 
+ 19:21:11  Installing calogica/dbt_date
 
-19:21:11  Installed from version 0.12.1
+ INFO:dbt_exercise_test:Installing calogica/dbt_date
 
- 
+ 19:21:11  Installed from version 0.9.2
 
-INFO:dbt_exercise_test:Installed from version 0.12.1
-
- 
-
-19:21:11  Up to date!
-
- 
-
-INFO:dbt_exercise_test:Up to date!
-
- 
-
-19:21:11  Installing calogica/dbt_date
-
- 
-
-INFO:dbt_exercise_test:Installing calogica/dbt_date
-
- 
-
-19:21:11  Installed from version 0.9.2
-
- 
-
-INFO:dbt_exercise_test:Installed from version 0.9.2
-
- 
+ INFO:dbt_exercise_test:Installed from version 0.9.2
 
 19:21:11  Updated version available: 0.10.0
 
- 
-
-INFO:dbt_exercise_test:Updated version available: 0.10.0
-
- 
+ INFO:dbt_exercise_test:Updated version available: 0.10.0
 
 19:21:11  
 
- 
+ INFO:dbt_exercise_test:
 
-INFO:dbt_exercise_test:
-
- 
-
-19:21:11  Updates available for packages: ['calogica/dbt_date']                 
+ 19:21:11  Updates available for packages: ['calogica/dbt_date']                 
 
 Update your versions in packages.yml, then run dbt deps
 
- 
-
-INFO:dbt_exercise_test:Updates available for packages: ['calogica/dbt_date']                 
+ INFO:dbt_exercise_test:Updates available for packages: ['calogica/dbt_date']                 
 
 Update your versions in packages.yml, then run dbt deps
 
- 
-
-INFO:dbt_exercise_test:dbt run \
+ INFO:dbt_exercise_test:dbt run \
 
     --project-dir /home/src/**************/dbt/dbt_cloud \
 
@@ -1390,211 +1327,110 @@ INFO:dbt_exercise_test:dbt run \
 
     --profiles-dir /home/src/**************/.profiles_interpolated_temp_39e7cc77-2e44-4e70-a353-8e50927612d0
 
- 
+ 19:21:12  Running with dbt=1.7.4
 
-19:21:12  Running with dbt=1.7.4
+ INFO:dbt_exercise_test:Running with dbt=1.7.4
 
- 
+ 19:21:12  Registered adapter: bigquery=1.7.2
 
-INFO:dbt_exercise_test:Running with dbt=1.7.4
+ INFO:dbt_exercise_test:Registered adapter: bigquery=1.7.2
 
- 
+ 19:21:12  Unable to do partial parsing because config vars, config profile, or config target have changed
 
-19:21:12  Registered adapter: bigquery=1.7.2
+ INFO:dbt_exercise_test:Unable to do partial parsing because config vars, config profile, or config target have changed
 
- 
+ 19:21:13  Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
 
-INFO:dbt_exercise_test:Registered adapter: bigquery=1.7.2
+ INFO:dbt_exercise_test:Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
 
- 
+ 19:21:13  
 
-19:21:12  Unable to do partial parsing because config vars, config profile, or config target have changed
+ INFO:dbt_exercise_test:
 
- 
+ 19:21:14  Concurrency: 4 threads (target='prod')
 
-INFO:dbt_exercise_test:Unable to do partial parsing because config vars, config profile, or config target have changed
+ INFO:dbt_exercise_test:Concurrency: 4 threads (target='prod')
 
- 
+ 19:21:14  
 
-19:21:13  Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
+ INFO:dbt_exercise_test:
 
- 
+ 19:21:14  1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
 
-INFO:dbt_exercise_test:Found 6 models, 2 tests, 3 sources, 0 exposures, 0 metrics, 704 macros, 0 groups, 0 semantic models
+ 19:21:14  2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
 
- 
+ INFO:dbt_exercise_test:1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
 
-19:21:13  
+ INFO:dbt_exercise_test:2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
 
- 
+ 19:21:15  2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
 
-INFO:dbt_exercise_test:
+ INFO:dbt_exercise_test:2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
 
- 
+ 19:21:15  3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
 
-19:21:14  Concurrency: 4 threads (target='prod')
+ 19:21:15  4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
 
- 
+ 19:21:15  5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
 
-INFO:dbt_exercise_test:Concurrency: 4 threads (target='prod')
+ INFO:dbt_exercise_test:3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
 
- 
+ INFO:dbt_exercise_test:4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
 
-19:21:14  
+ INFO:dbt_exercise_test:5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
 
- 
+ 19:21:15  1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
 
-INFO:dbt_exercise_test:
+ INFO:dbt_exercise_test:1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
 
- 
+ 19:21:15  6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
 
-19:21:14  1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
+ INFO:dbt_exercise_test:6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
 
- 
+ 19:21:19  6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
 
-19:21:14  2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
+ INFO:dbt_exercise_test:6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
 
- 
+ 19:21:19  4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
 
-INFO:dbt_exercise_test:1 of 6 START sql view model roman_dbt_prod.stg_roman_count ..................... [RUN]
+ INFO:dbt_exercise_test:4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
 
- 
+ 19:21:19  3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
 
-INFO:dbt_exercise_test:2 of 6 START sql view model roman_dbt_prod.stg_roman_sent ...................... [RUN]
+ INFO:dbt_exercise_test:3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
 
- 
+ 19:21:54  5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
 
-19:21:15  2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
+ INFO:dbt_exercise_test:5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
 
- 
+ 19:21:54  
 
-INFO:dbt_exercise_test:2 of 6 OK created sql view model roman_dbt_prod.stg_roman_sent ................. [CREATE VIEW (0 processed) in 1.52s]
+ INFO:dbt_exercise_test:
 
- 
+ 19:21:54  Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
 
-19:21:15  3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
+ INFO:dbt_exercise_test:Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
 
- 
+ 19:21:54  
 
-19:21:15  4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
+ INFO:dbt_exercise_test:
 
- 
+ 19:21:54  Completed successfully
 
-19:21:15  5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
+ INFO:dbt_exercise_test:Completed successfully
 
- 
+ 19:21:54  
 
-INFO:dbt_exercise_test:3 of 6 START sql table model roman_dbt_prod.dm_yearly_avg_word_count ........... [RUN]
+ INFO:dbt_exercise_test:
 
- 
+ 19:21:54  Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
 
-INFO:dbt_exercise_test:4 of 6 START sql table model roman_dbt_prod.dm_yearly_sentiment_count .......... [RUN]
-
- 
-
-INFO:dbt_exercise_test:5 of 6 START sql table model roman_dbt_prod.fact_roman_news .................... [RUN]
-
- 
-
-19:21:15  1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
-
- 
-
-INFO:dbt_exercise_test:1 of 6 OK created sql view model roman_dbt_prod.stg_roman_count ................ [CREATE VIEW (0 processed) in 1.56s]
-
- 
-
-19:21:15  6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
-
- 
-
-INFO:dbt_exercise_test:6 of 6 START sql table model roman_dbt_prod.fact_roman_count ................... [RUN]
-
- 
-
-19:21:19  6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
-
- 
-
-INFO:dbt_exercise_test:6 of 6 OK created sql table model roman_dbt_prod.fact_roman_count .............. [CREATE TABLE (366.0 rows, 4.3 KiB processed) in 3.24s]
-
- 
-
-19:21:19  4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
-
- 
-
-INFO:dbt_exercise_test:4 of 6 OK created sql table model roman_dbt_prod.dm_yearly_sentiment_count ..... [CREATE TABLE (338.0 rows, 316.2 KiB processed) in 3.62s]
-
- 
-
-19:21:19  3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
-
- 
-
-INFO:dbt_exercise_test:3 of 6 OK created sql table model roman_dbt_prod.dm_yearly_avg_word_count ...... [CREATE TABLE (177.0 rows, 389.1 KiB processed) in 4.03s]
-
- 
-
-19:21:54  5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
-
- 
-
-INFO:dbt_exercise_test:5 of 6 OK created sql table model roman_dbt_prod.fact_roman_news ............... [CREATE TABLE (24.9k rows, 794.9 MiB processed) in 38.92s]
-
- 
-
-19:21:54  
-
- 
-
-INFO:dbt_exercise_test:
-
- 
-
-19:21:54  Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
-
- 
-
-INFO:dbt_exercise_test:Finished running 2 view models, 4 table models in 0 hours 0 minutes and 41.65 seconds (41.65s).
-
- 
-
-19:21:54  
-
- 
-
-INFO:dbt_exercise_test:
-
- 
-
-19:21:54  Completed successfully
-
- 
-
-INFO:dbt_exercise_test:Completed successfully
-
- 
-
-19:21:54  
-
- 
-
-INFO:dbt_exercise_test:
-
- 
-
-19:21:54  Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
-
- 
-
-INFO:dbt_exercise_test:Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
-
+ INFO:dbt_exercise_test:Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
 ```
 Nice!!!
-The project is here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/dbt/dbt_cloud` (and the same path is in github)
+The project is here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/dbt/dbt_cloud` (and the same path is in github).
 
-It works, because we have our `profiles.yml` in the directory above, as it was said in the [Mage instruction](https://docs.mage.ai/dbt/add-existing-dbt)
+It works, because we have our `profiles.yml` in the directory above, as it was said in the [Mage instruction](https://docs.mage.ai/dbt/add-existing-dbt).
 
 It looks like:
 ```yaml
@@ -1661,7 +1497,7 @@ models:
           materialized: table
 ```
 
-In the project we have only models and one macro, they are very simple, but for exercise and dashboard it's enough
+In the project we have only models and one macro, they are very simple, but for exercise and dashboard it's enough.
 
 So we have a pipeline, and we should set trigger to run it every week:
 
@@ -1670,14 +1506,13 @@ We have fully automated pipeline!
 
 ### Step 11: dbt development
 
-But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models
+But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models.
 
 ### Step 12: Create dashboard for data visualization
 
 Now that we have our data, let’s build a dashboard to visualize the data.
 
-Looker is a tool that helps you explore, share, and visualize your company’s data so that you can make better business
-decisions.
+Looker is a tool that helps you explore, share, and visualize your company’s data so that you can make better business decisions.
 
 Go to [Looker Studio](https://lookerstudio.google.com/u/0/) and follow these steps:
 
@@ -1698,7 +1533,7 @@ For example:
 </td></tr>
 </table>
 
-And then add all other tbles from `roman_dbt_prod` and `roman_raw`
+And then add all other tbles from `roman_dbt_prod` and `roman_raw`.
 
 Click on **CREATE REPORT** button.
 (Add data - My data sources!)
@@ -1708,23 +1543,21 @@ You can now feel free to create some visualisations.
 Looker tutorials can be found [here](https://cloud.google.com/looker/docs/intro).
 And of cause we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the zoomcamp - 20 minutes for all cases!
 
-This is what my final dashboard looks like.
+This is what my final dashboard looks like:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1)
+You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 
 ### Step 13: Stop and delete to avoid costs
 
-To avoid incurring unnecessary charges to your GCP account, destroy all remote objects managed by a our Terraform
-configuration
+To avoid incurring unnecessary charges to your GCP account, destroy all remote objects managed by a our Terraform configuration.
 
-On your local machine, run this command.
+On your local machine, run this command:
 
 ``` bash
 terraform destroy
 ```
 
-You can also manually delete your Virtual Environment, Bucket and BigQuery ressource and perhaps your Google Cloud
-project.
+You can also manually delete your Virtual Environment, Bucket and BigQuery ressource and perhaps your Google Cloud project.
 
