@@ -23,7 +23,7 @@ The whole process is orchestrated by the workflow orchestration engine [Mage](ht
 
 A pipeline starts with scheduler and gets the data, saves it first as a parquet file (with buffer it looks ugly) and then moves to a Data Lake (GCP Storage). Then we transfer data from Data Lake to DWH (BigQuery) with some transformations, and then we do some transformations with dbt.
 
-To create resources in GCP I used [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) servise and is really useful.
+To create resources in GCP I used [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) service and is really useful.
 
 A dashboard was built with [Google Looker](https://cloud.google.com/looker) from BigQuery data.
 
@@ -79,22 +79,22 @@ The step-by-step instructions consist of several steps:
 - Step 13: Stop and delete to avoid costs
 
 
-The project was developed using a Macbook, but locally there is only Terraform and Google CLI:) Of cause we can create VM Instance with Terraform and G CLI to create our project instance from there and have all the project in the Cloud, but it's seems to be a very stupid idea:) 
+The project was developed using a Macbook, but locally there is only Terraform and Google CLI:) Of cause we can create VM Instance with Terraform and Google CLI to create our project instance from there and have all the project in the Cloud, but it's seems to be a very stupid idea:) 
 
 ### Content of the repository
 
 This repository (<https://github.com/nyan222/roman_empire_zoomcamp>) contains following folders:
 
-- `terraform`: this folder is related to Terraform.
-- `mage-empire`: this folder contains Mage project with dbt inside Mage.
-- `pics`: this folder contains pictures for this README.
+- `terraform`: this folder is related to Terraform
+- `mage-empire`: this folder contains Mage project with dbt project inside Mage
+- `pics`: this folder contains pictures for this README
 
 ### Step 1: Create a new project in Google Cloud Platform
 
 If you do not have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
 completed using only the services included in the GCP [free tier](https://cloud.google.com/free/).
 
-Unfortunnaly, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card could not be virtual. Google has so nice working antifraud algorithm. So simple for some countries:((
+Unfortunnaly, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card should not be virtual. Google has so nice working antifraud algorithm. So simple for some countries:((
 GCP states that it will not charge you unless you explicitly end your free-trial period, but be careful. But it was clearly indicated when registering: No autocharge after free trial ends. But you should always be careful:)
 
 Once you’ve created the account, log into [Google Cloud Platform (GCP) console](https://console.cloud.google.com).
@@ -140,8 +140,7 @@ if [ -f '~/Applications/google-cloud-sdk/path.zsh.inc' ]; then . '~/Applications
 if [ -f '~/Applications/google-cloud-sdk/completion.zsh.inc' ]; then . '~Applications/google-cloud-sdk/completion.zsh.inc'; fi
 ```
 
-And then run 
-
+And then run:
 ```bash
 source ~/.zshrc
 ```
@@ -262,19 +261,19 @@ We will now create the resources in our google cloud project. Instead of creatin
 
 With Terraform installed, you are ready to create infrastructure.
 
-Clone this repository somewhere to your local machine.
+Clone this repository somewhere to your local machine:
 
 ``` bash
 git clone https://github.com/nyan222/roman_empire_zoomcamp.git
 ```
-In the week 1 of the Zoomcamp we did the same, but the problem is that we have to [create multiple BQ datasets](https://stackoverflow.com/questions/74586936/how-to-create-a-multiple-datasets-and-set-acess-in-bigquery) for dbt dev and prod and with 'raw' data
+In the week 1 of the Zoomcamp we did the same, but the problem is that we have to [create multiple BQ datasets](https://stackoverflow.com/questions/74586936/how-to-create-a-multiple-datasets-and-set-acess-in-bigquery) for dbt dev and prod and with 'raw' data.
 
 This repository contains four files related to Terraform:
 
-- `roman_empire_zoomcamp/terraform/main.tf` contains the main set of configuration for our project.
-- `roman_empire_zoomcamp/terraform/variables.tf` contain the variable definitions for our project.
-- `roman_empire_zoomcamp/terraform/resource/datasets.json` contains the json with datasets' descriptions.
-- `roman_empire_zoomcamp/terraform/locals.tf` contains the json parser.
+- `roman_empire_zoomcamp/terraform/main.tf` contains the main set of configuration for our project
+- `roman_empire_zoomcamp/terraform/variables.tf` contain the variable definitions for our project
+- `roman_empire_zoomcamp/terraform/resource/datasets.json` contains the json with datasets' descriptions
+- `roman_empire_zoomcamp/terraform/locals.tf` contains the json parser
 
 And we could not see resource/datasets.json because of security in .gitignore, here it is, we should create it again:
 ```json
@@ -774,7 +773,7 @@ put cfk.json
 
 For some debugging things we can  install Anaconda for Linux, but it's optional.
 
-Best for you version to install your can find [here](https://www.anaconda.com/download#downloads)
+Best for you version to install your can find [here](https://www.anaconda.com/download#downloads).
 
 ``` bash
 cd
@@ -972,6 +971,8 @@ def test_output(output, *args) -> None:
     assert output is not None, 'The output is undefined'
 ```
 
+![s01](pics/s01.png)
+
 Nice! There are only two things - loader works for about a day and you should delete local *.parquet files from `~/roman_empire_zoomcamp/mage-empire/magic-roman/`. On the first start with 2657 files you have to do it manually, just not to delete that very parquet, that we load to gcs storage right now, and for other runs we have to put in crontab this line:
 ```bash
 ~/roman_empire_zoomcamp/mage-empire/*.parquet -type f -mtime +1 -exec rm {} +
@@ -1002,6 +1003,8 @@ blob.upload_from_file(parquet_buffer, content_type='application/octet-stream')
 
 We have our data in Data Lake (GCS Bucket) and have to move them to DWH (BigQuery).
 
+Remember, that you have change `coral-firefly-411510` to your `PROJECT-ID`!!!
+
 #### Sql block `DATA LOADER`, name `read_all_the_news`
 (Connection here and then - BigQuery - dev - Use raw SQL)
 ```sql
@@ -1017,9 +1020,11 @@ select * from `roman_raw.external_roman`;
 ```
 ![cnn](pics/cnn.png)
 
+![s02](pics/s02.png)
+
 From here we have two branches:
 
-### 1. Sql block `DATA EXPORTER`, name `count_empire`
+#### 1. Sql block `DATA EXPORTER`, name `count_empire`
 Here we count all the articles by yeaar and the articles, that mentioned Roman Empire
 ```sql
 create or replace table `coral-firefly-411510.roman_raw.roman_count` as 
@@ -1037,6 +1042,8 @@ from `roman_raw.all_news`)
 group by year;
 ```
 
+![s03](pics/s03.png)
+
 #### 2. Sql block `TRANSFORMER`, name `empire_news`
 We select only Roman Empire news!:)
 ```sql
@@ -1053,7 +1060,10 @@ from (select * , extract( year from cast(date as date)) year
 from `roman_raw.all_news`) news
 where lower(text) like '%roman empire%';
 ```
-And read this to use in python blocks
+
+![s04](pics/s04.png)
+
+And read this to use in python blocks.
 
 #### Sql block `TRANSFORMER`, name `select_news`
 ```sql
@@ -1063,7 +1073,7 @@ select * from `coral-firefly-411510.roman_raw.roman_news`;
 From here we again have two branches:
 
 #### 2.1 Python block `TRANSFORMER`, name `wordcount`
-I want to have wordcloud at my dashboard, so i need wordcount
+I want to have wordcloud at my dashboard, so i need wordcount:
 ```python
 import string
 import re
@@ -1160,6 +1170,8 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
     )
 ```
 
+![s05](pics/s05.png)
+
 #### 2.2 Python block `TRANSFORMER`, name `roman_sentiment`
 We want to know the sentiment of the article
 ```python
@@ -1247,6 +1259,8 @@ PARTITION BY DATE_TRUNC(date,YEAR)
 CLUSTER BY word_count AS
 select * from `roman_raw.roman_sent1`;
 ```
+
+![s06](pics/s06.png)
 
 And now the last but not the least - dbt!
 #### dbt block `DBT` with name `dbt_exercise`
@@ -1427,6 +1441,9 @@ Update your versions in packages.yml, then run dbt deps
 
  INFO:dbt_exercise_test:Done. PASS=6 WARN=0 ERROR=0 SKIP=0 TOTAL=6
 ```
+
+![s09](pics/s09.png)
+
 Nice!!!
 The project is here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/dbt/dbt_cloud` (and the same path is in github).
 
@@ -1559,5 +1576,5 @@ On your local machine, run this command:
 terraform destroy
 ```
 
-You can also manually delete your Virtual Environment, Bucket and BigQuery ressource and perhaps your Google Cloud project.
+You can also manually delete your Virtual Environment, Bucket and BigQuery resource and perhaps your Google Cloud project.
 
