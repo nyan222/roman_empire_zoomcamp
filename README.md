@@ -12,7 +12,7 @@ The goal of this project is to apply everything we have learned in [the course](
 
 How often do you think about the Roman Empire?
 
-All my schoolmates and I think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of cause the ancient. And when this meme became popular (wiki says in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
+All my schoolmates and I think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of course the ancient. And when this meme became popular (wiki says in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
 
 In this project I want to think about the Roman Empire with authors and readers of newspapers since 1690 to 1963;).
 
@@ -32,7 +32,7 @@ A dashboard was built with [Google Looker](https://cloud.google.com/looker) from
 
 This diagram presents the high level architecture of the project.
 
-(Temporary unavailable) ![architecture](pics/architecture.png)
+![architecture](pics/architecture.png)
 
 ## Dashboard
 
@@ -40,7 +40,7 @@ This is what my final dashboard looks like:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
+You can view my dashboard till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 
 ## Reproducibility
 
@@ -84,7 +84,7 @@ The step-by-step instructions consist of several steps:
 - Step 13: Stop and delete to avoid costs
 
 
-The project was developed using a Macbook, but locally there is only Terraform and Google CLI:) Of cause we can create VM Instance with Terraform and Google CLI to create our project instance from there and have all the project in the Cloud, but it's seems to be a very stupid idea:) 
+The project was developed using a Macbook, but locally there is only Terraform and Google CLI:) Of course we can create VM Instance with Terraform and Google CLI to create our project instance from there and have all the project in the Cloud, but it's seems to be a very stupid idea:) 
 
 ### Content of the repository
 
@@ -899,7 +899,7 @@ And let's see all the blocks of the pipeline:
 ![ppl](pics/ppl.png)
 
 First we have to load our data.
-Of cause I wanted to get modern data from twitter-x or insta, but snscraper does not work anymore, so we have nice dataset from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers).
+Of course I wanted to get modern data from twitter-x or insta, but snscraper does not work anymore, so we have nice dataset from [HuggingFace](https://huggingface.co/datasets/PleIAs/US-PD-Newspapers).
 
 ```text
 Content
@@ -1569,8 +1569,19 @@ We have fully automated pipeline!
 <details>
 <summary>Expand</summary>
 
-But of cause we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models.
+But of course we can enjoy dbt development, debug logs are nice and helpful, but dbt cloud is also nice and helpful to build complex models. And we should use different branches anyway, when we have a real project, not a pet one.
 
+The best instruction for quick start is [here](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/04-analytics-engineering/dbt_cloud_setup.md), and [here](https://www.youtube.com/watch?v=J0XCDyKiU64&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=42) is short and clear video, noone can explain better.
+
+I should notice, that when selecting repository, it's better to choose GitHub or GitLab (not Clone repository!) to have possibitity of making CI jobs. 
+And if you use your GitHub repo for dbt cloud once, you will not be able to use any other repo with this login for other project under other dbt cloud user (free account lets have only one project). That's not fine.
+
+Remember, that dbt cloud will not let you develop in the master branch, and that's nice, but don't delete your branch after PR merge, as GitHub suggests, keep it, it can be reused.
+And of course you should have another BigQuery schema for development - we created `roman_dbt_dev` with terraform in the beginning.
+
+[Here](https://www.youtube.com/watch?v=ueVy2N54lyc&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=44) is the video about dbt development, from which we also understand, why we need dbt. And there is nice data lineage.
+
+But of course we can do the same without dbt cloud, just don't forget to make another branch and read debug logs. dbt debug is really our everything.
 
 </details>
 
@@ -1612,13 +1623,13 @@ Click on **CREATE REPORT** button.
 You can now feel free to create some visualisations.
 
 Looker tutorials can be found [here](https://cloud.google.com/looker/docs/intro).
-And of cause we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the zoomcamp - 20 minutes for all cases!
+And of course we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the zoomcamp - 20 minutes for all cases!
 
 This is what my final dashboard looks like:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
+You can view my dashboard till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 </details>
 
 ### Step 13: Stop and delete to avoid costs
