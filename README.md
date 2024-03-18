@@ -12,11 +12,11 @@ The goal of this project is to apply everything we have learned in [the course](
 
 How often do you think about the Roman Empire?
 
-All my schoolmates and I think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of course the ancient. And when this meme became popular (wiki says in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
+All my schoolmates and I think about the Roman Empire daily, just because we've finished the classical school with all these latin and ancient greek languages and many hours of history and literature, of course the ancient ones. And when this meme became popular (wiki says in mid-September 2023), I've understood, that we are not alone and all the world thinks about the Roman Empire too. Even when I did my homework on hadoop mapreduce course, the result of top 5 bigrams from wiki contained "roman_empire". That's nice!
 
 In this project I want to think about the Roman Empire with authors and readers of newspapers since 1690 to 1963;).
 
-I really want to know timeline of thinking about the Roman Empire and sentiment of messages, to see word cloud of article's content and average length of the artice.
+I really want to find out timeline of thinking about the Roman Empire and sentiment of the articles, to see word cloud of text's content and average length.
 
 ## Project architecture
 
@@ -26,62 +26,63 @@ The whole process is orchestrated by the workflow orchestration engine [Mage](ht
 
 A pipeline starts with scheduler and gets the data, saves it first as a parquet file (with buffer it looks ugly) and then moves to a Data Lake (GCP Storage). Then we transfer data from Data Lake to DWH (BigQuery) with some transformations, and then we do some transformations with dbt.
 
-To create resources in GCP I used [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) service and is really useful.
+To create resources in GCP we should use [Terraform](https://www.terraform.io/), just because it was in the course as IaC (Infrastructure as code) service and is really useful.
 
-A dashboard was built with [Google Looker](https://cloud.google.com/looker) from BigQuery data.
+A dashboard is built with [Google Looker](https://cloud.google.com/looker) from BigQuery data.
 
-This diagram presents the high level architecture of the project.
+This dpicture shows the high level architecture of the project.
 
 ![architecture](pics/architecture.png)
 
 ## Dashboard
 
-This is what my final dashboard looks like:
+Here is  screen of the final dashboard:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
+You can view my dashboard itself till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 
 ## Reproducibility
 
 You will find below **detailed instructions** for replicating this pipeline from scratch to the dashboard.
 
-## Future work
+## Future works
 
 - Try all this with another popular Cloud, that accept my cards:)
 - Make incremental model, to append only the latest data from each load
 - Documentation and data quality tests in dbt
 - Try Spark transformations instead of dbt
 - Try Streaming process with Kafka and Spark
+- Try AirFlow as more popular instrument
 
 ## License
 
-MIT License.
+MIT License %)
 
 #### cr7 
 [Back to Criteria](#cr)
 ## Instructions for reproducibility
 
-You will find below **very detailed instructions** for replicating this pipeline from scratch to the dashboard.
+Here is **a very detailed (i hope) instruction** for replicating this pipeline from scratch to the dashboard.
 
-The step-by-step instructions consist of several steps:
+The step-by-step instruction has the following steps:
 
-- Set Up Your Cloud Environment
-  - Step 1: Create a project in Google Cloud Platform (GCP)
-  - Step 2: Install Google Cloud CLI
-  - Step 3: Configure permissions for GCP services
-  - Step 4: Install Terraform
-  - Step 5: Create resources in GCP using Terraform
-- Set Up Your Virtual Machine
-  - Step 6: Create SSH key pairs (optional)
-  - Step 7: Create SSH config file (optional)
-  - Step 8: Install packages on the Virtual Machine (Docker & Mage)
-- Set Up and run pipeline
-  - Step 9: Edit configuration file
-  - Step 10: Build pipeline with Mage
-  - Step 11: dbt development
-- Step 12: Create dashboard for data visualization
-- Step 13: Stop and delete to avoid costs
+- Set Up the Cloud Environment:
+  - Step 1: Creating a project in the Google Cloud Platform (GCP)
+  - Step 2: Installing Google Cloud CLI
+  - Step 3: Configuring permissions for GCP services (with service account and it's key)
+  - Step 4: Installing the Terraform
+  - Step 5: Creating resources in GCP using Terraform
+- Set Up the Virtual Machine:
+  - Step 6: Creating SSH keys
+  - Step 7: Creating SSH config file 
+  - Step 8: Installing packages on the Virtual Machine (Docker & Mage)
+- Set Up and run the pipeline:
+  - Step 9: Editing Mage configuration file
+  - Step 10: Building pipeline with Mage
+  - Step 11: dbt development 
+- Step 12: Creating dashboard for data visualization
+- Step 13: Destroying VM with Terraform
 
 
 The project was developed using a Macbook, but locally there is only Terraform and Google CLI:) Of course we can create VM Instance with Terraform and Google CLI to create our project instance from there and have all the project in the Cloud, but it's seems to be a very stupid idea:) 
@@ -90,38 +91,36 @@ The project was developed using a Macbook, but locally there is only Terraform a
 
 This repository (<https://github.com/nyan222/roman_empire_zoomcamp>) contains following folders:
 
-- `terraform`: this folder is related to Terraform
+- `terraform`: this folder has *.tf files
 - `mage-empire`: this folder contains Mage project with dbt project inside Mage
 - `pics`: this folder contains pictures for this README
 
-### Step 1: Create a new project in Google Cloud Platform
+### Step 1: Creating a project in the Google Cloud Platform (GCP)
 <details>
 <summary>Expand</summary>
 
-If you do not have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
-completed using only the services included in the GCP [free tier](https://cloud.google.com/free/).
+If you do not have a GCP account, [you have to create it](https://console.cloud.google.com/freetrial/). All the steps can be completed with the services included in the GCP [free tier](https://cloud.google.com/free/).
 
-Unfortunnaly, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card should not be virtual. Google has so nice working antifraud algorithm. So simple for some countries:((
+Unfortunally, your credit card information is needed. And you should register google billing account only from the country, where you get your card, without vpn, and your card should not be virtual. Google has so nice working antifraud algorithm. So simple for some countries:((
 GCP states that it will not charge you unless you explicitly end your free-trial period, but be careful. But it was clearly indicated when registering: No autocharge after free trial ends. But you should always be careful:)
 
 Once you’ve created the account, log into [Google Cloud Platform (GCP) console](https://console.cloud.google.com).
 
-[Create a new project](https://console.cloud.google.com/projectcreate) in the GCP console. Name this new project `roman-empire`. Make note of the **project ID** (mine is `coral-firefly-411510`). For subsequent steps, you will need to replace the `PROJECT_ID` with your own **project ID**.
+[Create a new project](https://console.cloud.google.com/projectcreate) in the GCP console. Name this new project `roman-empire` (or as you want). Be sure to change the **project ID** (mine is `coral-firefly-411510` everywhere, but it will not work). For all the steps, you need to replace the `PROJECT_ID` with your own **project ID**.
 
-Go to [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com), select your project (mine is `roman-empire`) and click on **ENABLE** button.
+Go to [Compute Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com), select your project and click on **ENABLE** button.
 
 ![ce](pics/ce.jpg)
 
-This operation may take some minutes.
 </details>
 
-### Step 2: Install Google Cloud CLI
+### Step 2: Installing Google Cloud CLI
 <details>
 <summary>Expand</summary>
 
-The [Google Cloud CLI](https://cloud.google.com/sdk/gcloud) (gcloud CLI) is a set of tools to create and manage Google Cloud resources. You can use these tools to perform many common platform tasks from the command line or through scripts and other automation.
+The [Google Cloud CLI](https://cloud.google.com/sdk/gcloud) (gcloud CLI) is a set of tools to create and manage Google Cloud resources.
 
-Go to [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install), choose your Operating System (OS), and follow the installation instructions to install gcloud CLI on your local machine.
+Go to [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install), choose your Operating System (OS), and follow the installation instructions to install gcloud CLI on your local machine. Documentation is nice and clear as i see.
 
 Confirm that gcloud is installed with `gcloud -v`.
 
@@ -155,7 +154,7 @@ source ~/.zshrc
 ```
 </details>
 
-### Step 3: Configure permissions for GCP services (with service account and it's key)
+### Step 3: Configuring permissions for GCP services (with service account and it's key)
 <details>
 <summary>Expand</summary>
 
@@ -163,13 +162,13 @@ There is nice step-by-step instruction from Google, [how to create service accou
 
 See also an article [Understanding Service accounts](https://cloud.google.com/iam/docs/understanding-service-accounts).
 
-The course shows, that we have to have these roles:
+The DE Zoomcamp course shows, that we have to have these roles:
 
 ![sar](pics/sar.png)
 
-In console you schould add it by hands, following the instruction, but if you are ok with roles' names, you can use CLI.
+In console you should add it by hands, following the instruction, but if you are ok with roles' names, you can use CLI.
 
-From your local machine, run the following command.
+From your local machine run the following command:
 
 ``` bash
 gcloud auth login
@@ -177,7 +176,7 @@ gcloud auth login
 
 **Google Cloud SDK** will ask you for permission to access your Google Account. Click on **Allow** button.
 
-Still from your local machine, run the following commands. Remember that you need to replace the `PROJECT_ID` with your own (mine is `coral-firefly-411510`).
+Then run the following commands and remember that you need to replace the `PROJECT_ID` with your own (mine is `coral-firefly-411510` and if you see ot in configs - please don't forget to change it):
 
 ``` bash
 PROJECT_ID="coral-firefly-411510"
@@ -186,13 +185,11 @@ gcloud components update
 gcloud iam service-accounts create terraform-runner --display-name "terraform-runner"
 ```
 
-In the Google Cloud console, on the left menu, go to the **IAM & Admin** and select **Service Accounts**. A service account whose name begins with `terraform-runner@…​` should be created (mine is `terraform-runner@coral-firefly-411510.iam.gserviceaccount.com`).
+In the Google Cloud console, on the left menu, go to the **IAM & Admin** and select **Service Accounts**. A service account with the name like `terraform-runner@…​` should be created (mine is `terraform-runner@coral-firefly-411510.iam.gserviceaccount.com`, note that it uses your project id again).
 
-Next, we have to define the roles.
+Then we have to define the roles.
 
-From your local machine, run the following commands.
-
-Remember that you need to replace the `PROJECT_ID` with your own (mine is `coral-firefly-411510`).
+From your local machine, run the following commands:
 
 ``` bash
 PROJECT_ID="coral-firefly-411510"
@@ -210,13 +207,11 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 --role="roles/bigquery.admin"
 ```
 
-And so on, if you find all 13 roles. I did with console:)
+And so on, if you will be able to find all 13 roles. I was not, sorry, so i did it with console:)
 
 Now, we have to download a JSON key file representing the credentials.
 
-From your local machine, run the following commands.
-
-Remember that you need to replace the `PROJECT_ID` with your own (mine is `coral-firefly-411510`).
+From your local machine, run the following commands:
 
 ``` bash
 PROJECT_ID="coral-firefly-411510"
@@ -228,7 +223,7 @@ gcloud iam service-accounts keys create ~/.config/gcloud/cfk.json \
 
 You also can get the key from [console](https://cloud.google.com/iam/docs/keys-create-delete).
 
-Please be careful with git!!! Use *.json in every .gitignore you have, the key shoud not get to repository. Everyone who get it can use your cloud resources.
+Please be careful with git!!! Use *.json in every .gitignore you have, the key should not get to repository. Everyone who get it can use your cloud resources.
 
 Once the key has been downloaded, set your environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the path of your JSON.
 
@@ -243,15 +238,14 @@ gcloud auth application-default login
 
 **Google Auth Library** will ask you for permission to access your Google Account. Click on **Allow** button.
 
-Congratulations! You are now authenticated with the gcloud CLI!
+Nice, we are now authenticated with the gcloud CLI!
 </details>
 
 ### Step 4: Install Terraform
 <details>
 <summary>Expand</summary>
 
-[Terraform](https://developer.hashicorp.com/terraform/intro) is an infrastructure as code tool that lets you build,
-change, and version cloud and on-prem resources safely and efficiently.
+[Terraform](https://developer.hashicorp.com/terraform/intro) is an infrastructure as code tool that lets you build, change, and version cloud and on-prem resources safely and efficiently.
 
 Go to [Install Terraform](https://developer.hashicorp.com/terraform/downloads?product_intent=terraform), choose version for your Operating System (OS), and follow the installation instructions to install Terraform on your local machine.
 
@@ -274,20 +268,18 @@ on darwin_arm64
 #### cr2
 [Back to Criteria](#cr)
 
-### Step 5: Create resources in GCP using Terraform
+### Step 5: Creating resources in GCP using Terraform
 <details>
 <summary>Expand</summary>
 
-We will now create the resources in our google cloud project. Instead of creating these resources manually, it is easier to create them programmatically.
-
-With Terraform installed, you are ready to create infrastructure.
+We will now create the resources in our google cloud project. Instead of creating these resources manually, it is easier to create them with Terraform.
 
 Clone this repository somewhere to your local machine:
 
 ``` bash
 git clone https://github.com/nyan222/roman_empire_zoomcamp.git
 ```
-In the week 1 of the Zoomcamp we did the same, but the problem is that we have to [create multiple BQ datasets](https://stackoverflow.com/questions/74586936/how-to-create-a-multiple-datasets-and-set-acess-in-bigquery) for dbt dev and prod and with 'raw' data.
+In the week 1 of the Zoomcamp we did the same and I've taken config from the homework, but now the problem is that we have to [create multiple BQ datasets](https://stackoverflow.com/questions/74586936/how-to-create-a-multiple-datasets-and-set-acess-in-bigquery) for dbt dev and prod and with 'raw' data.
 
 This repository contains four files related to Terraform:
 
@@ -316,16 +308,16 @@ And we could not see resource/datasets.json because of security in .gitignore, h
 In `roman_empire_zoomcamp/terraform/variables.tf` file, you must replace the values of certain parameters with your own:
 
 - Variable `project` for your `PROJECT_ID` (mine is `coral-firefly-411510`).
-- Variable `region` for a region near you (mine is `us-west1`). Choose your location
-  [here](https://cloud.google.com/about/locations), ideally offering low carbon intensity,
+- Variable `region` for a region near you (i have chosen `us-west1`). Choose your location
+  [here](https://cloud.google.com/about/locations).
 - Variable `zone`, used for the virtual machine (mine is `us-west1-b`). See [Available regions and
   zones](https://cloud.google.com/compute/docs/regions-zones#available).
 
 Save and close the `roman_empire_zoomcamp/terraform/variables.tf` file.
 
-When you create a new configuration with Terraform, you need to initialize the directory.
+When you have created a new configuration with Terraform, you need to initialize the directory.
 
-From your local machine, run [terraform init](https://www.terraform.io/docs/commands/init.html) to initialize the working directory:
+From your local machine, run [terraform init](https://www.terraform.io/docs/commands/init.html):
 
 ``` bash
 cd
@@ -362,7 +354,7 @@ rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
 ```
 
-Remember about vpn if you face difficulties.
+Remember about vpn if you face difficulties!
 
 Next, run [terraform validate](https://www.terraform.io/docs/commands/validate.html) to validate Terraform configuration files on the local machine:
 
@@ -370,7 +362,7 @@ Next, run [terraform validate](https://www.terraform.io/docs/commands/validate.h
 terraform validate
 ```
 
-You should see this:
+You should see message like this:
 
 ```bash
 Success! The configuration is valid.
@@ -545,17 +537,15 @@ Terraform will perform the following actions:
 Plan: 5 to add, 0 to change, 0 to destroy.
 ```
 
-Nice! We see 3 BQ datasets:)
+Nice! We can see 3 BQ datasets:)
 
-Finally, run [terraform apply](https://developer.hashicorp.com/terraform/cli/commands/apply) to execute the actions proposed in a Terraform plan and apply the configuration concretely on your project in Google Cloud.
+Finally, run [terraform apply](https://developer.hashicorp.com/terraform/cli/commands/apply) to execute the plan and apply the configuration for your existing project in the Google Cloud.
 
 ``` bash
 terraform apply
 ```
 
 Respond to the confirmation prompt with a `yes`.
-
-The last two commands may take some times to run.
 
 After that, you should see somethig like this in your terminal:
 
@@ -575,68 +565,69 @@ google_compute_instance.my-instance: Creation complete after 18s [id=projects/co
 Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
 ```
 
-In the Google Cloud console, on the left menu, go to the **Compute Engine** and **VM instances**. You shold see a new Virtual Machine (VM) instance (mine is `roman-empire`) on Ubuntu 20.04.6 LTS with 4vCPUs, 16 GB of memory and 100 GB of disk space.
+In the Google Cloud console, on the left menu, go to the **Compute Engine** and **VM instances**. You shold see a new Virtual Machine (VM) instance (for example `roman-empire`) on Ubuntu 20.04.6 LTS with 4vCPUs, 16 GB of memory and 100 GB of disk space (just because our dataset is more then 40 GB and i had to use VM space to get it)
 
 ![vm](pics/vm.png)
 
-Take note of your `EXTERNAL_IP`. We will need it later.
+Take note of your `EXTERNAL_IP`. We will need it later for getting access to our VM.
 
-In the Google Cloud console, on the left menu, go to the **Cloud Storage** and **Buckets**. You shold see a new a new Compute Engine Bucket (mine is `roman_empire_zoomcamp`).
+In the Google Cloud console, on the left menu, go to the **Cloud Storage** and **Buckets**. You shold see a new a new Compute Engine Bucket (in my config it is `roman_empire_zoomcamp`).
 
 ![gb](pics/gb.png)
 
-In the Google Cloud console, on the left menu, go to the **Big Query**. You shold see a new a new BigQuery Datasets (mine is `roman_raw`).
+In the Google Cloud console, on the left menu, go to the **Big Query**. You should see three BigQuery Datasets.
 
 ![bq](pics/bq.png)
 
-If these three services are created, everything is fine and we can move on to the next step.
+If these three services are created, everything is fine and we can move on.
 </details>
 
-### Step 6: Create SSH key pairs (optional)
+### Step 6: Creating SSH keys
 <details>
 <summary>Expand</summary>
 
 Note!: In any case it would be nice to see again the lecture [DE Zoomcamp 1.4.1 - Setting up the Environment on Google Cloud (Cloud VM + SSH access)](https://www.youtube.com/watch?v=ae-CV2KfoN0).
 
-In order to avoid typing the password each time to connect to the VM from the local machine, you can create an SSH key pairs on the local machine.
+In order to avoid typing the password each time to connect to the VM from the local machine, we need to create an SSH keys on our local machine.
 
 Follow the instructions below according to your Operating System (OS).
 
 #### Linux and macOS
 
-For Linux and macOS, run the following command. Replace the `USERNAME` on your computer. Replace also `KEY_FILENAME` with a more common filename like `my-ssh-key`.
+For Linux and macOS, run the following command. Replace the `USERNAME` on your computer. Replace also `KEY_NAME` with your own one.
 
 ``` bash
-ssh-keygen -t rsa -f ~/.ssh/KEY_FILENAME -C USERNAME -b 2048
+ssh-keygen -t rsa -f ~/.ssh/KEY_NAME -C USERNAME -b 2048
 ```
 
-`ssh-keygen` saves your private key file to `~/.ssh/KEY_FILENAME` and your public key file to `~/.ssh/KEY_FILENAME.pub`.
+`ssh-keygen` saves your private key file to `~/.ssh/KEY_NAME` and your public key file to `~/.ssh/KEY_NAME.pub`.
 
-#### Windows 10 or later
+#### Windows
 
-For Windows 10 or later, see these [instructions](https://cloud.google.com/compute/docs/connect/create-ssh-keys#windows-10-or-later).
+(I have Mac, but hope it works)
 
-`ssh-keygen` saves your private key file to `C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME` and your public key file to `C:\Users\WINDOWS_USER\.ssh\KEY_FILENAME.pub`.
+For Windows there are some [instructions](https://cloud.google.com/compute/docs/connect/create-ssh-keys#windows-10-or-later).
+
+`ssh-keygen` saves your private key file to `C:\Users\WINDOWS_USER\.ssh\KEY_NAME` and your public key file to `C:\Users\WINDOWS_USER\.ssh\KEY_NAME.pub`.
 
 #### Add SSH keys to VM
 
-Next, copy and upload the public key `KEY_FILENAME.pub` to GCP.
+Next, copy and upload the public key `KEY_NAME.pub` to GCP.
 
-In the Google Cloud console, select **Compute Engine** from the left menu, then **Metadata** (list down-down-down), select **SSH KEYS** tab,
-click on **ADD SSH KEY** button.
+In the Google Cloud console, select **Compute Engine** from the left menu, then **Metadata** , select **SSH KEYS** tab, click on **ADD SSH KEY** button.
 
 Paste the public key in the field, and click on **SAVE** button.
 
 ![sk](pics/sk.png)
 
-Here, a trick to copy the contents of your public `KEY_FILENAME.pub` file. Just run the following command.
+To read it before pasting use:
 
 ``` bash
-cat ~/.ssh/KEY_FILENAME.pub | pbcopy
+cat ~/.ssh/KEY_NAME.pub
 ```
 </details>
 
-### Step 7: Create SSH config file (optional)
+### Step 7: Create SSH config file
 <details>
 <summary>Expand</summary>
 
@@ -652,24 +643,23 @@ Edit the file et add this content:
 Host roman-empire
     HostName EXTERNAL_IP
     User USERNAME
-    IdentityFile ~/.ssh/KEY_FILENAME
+    IdentityFile ~/.ssh/KEY_NAME
 ```
 
 Replace the following:
 
 - `EXTERNAL_IP`: the external IP of the VM instance. It always changes, when you stop and start your VM, so you should every time edit config, but it's ok and don't forget
-- `USERNAME`: your username on the VM, either the same username used to generate the SSH key.
-- `~/.ssh/KEY_FILENAME`: the path of the private SSH key. Note that it has to be absolute path for Windows.
+- `USERNAME`: your username on the VM, it should be the same username as when generating the SSH key.
+- `~/.ssh/KEY_NAME`: the path of the private SSH key. Note that it has to be absolute path for Windows.
 
-To access your virtual machine, just run this command:
+To access our virtual machine now we have just to run:
 
 ``` bash
 ssh roman-empire
 ```
-
 Respond to the confirmation prompt with a `yes`.
 
-Nicevi! You should see this something like this:
+Nice! You should see the info like this:
 
 ``` txt
 The authenticity of host 'XXX.XXX.XXX.XXX (XXX.XXX.XXX.XXX)' can't be established.
@@ -712,7 +702,7 @@ applicable law.
 g***k@roman-empire:~$
 ```
 
-Otherwise, without `~/.ssh/config` file, you need to run this command:
+Or without `~/.ssh/config` file we need to run this command:
 
 ``` bash
 ssh -i ~/.ssh/gcp USERNAME@EXTERNAL_IP
@@ -721,7 +711,7 @@ ssh -i ~/.ssh/gcp USERNAME@EXTERNAL_IP
 Where `USERNAME` is your username on the VM and `EXTERNAL_IP` is the external IP of the VM.
 </details>
 
-### Step 8: Install packages on the Virtual Machine
+### Step 8: Installing packages on the Virtual Machine (Docker & Mage)
 <details>
 <summary>Expand</summary>
 
@@ -793,7 +783,7 @@ CONTAINER ID   IMAGE                  COMMAND                  CREATED          
 And now we need to put Google service account key to our mage project.
 
 Do it from your local machine.
-Note!!!: yuo shoud begin from directory, where the key lies and act quickly!
+Note!!!: you should begin from the directory, where the key lies and act quickly!
 ```bash
 sftp roman-empire
 cd roman_empire_zoomcamp/mage-empire
@@ -826,20 +816,20 @@ pip install -r ~/roman_empire_zoomcamp/requirements.txt
 pip install -U pip setuptools wheel
 ```
 
-After that, you have a conda environment `myenv` with all required libraries installed.
+And you'll have a conda environment `myenv` with all required libraries installed.
 </details>
 
-### Step 9: Edit configuration file
+### Step 9: Editing Mage configuration file
 <details>
 <summary>Expand</summary>
 
-Next, you’ll need to create a configuration file with your details for the orchestration workflow.
+Next, you’ll need to edit a configuration file with your gcp credential key.
 
 We have a configuration file for Mage here: `~/roman_empire_zoomcamp/mage-empire/magic-roman/io_config.yaml`.
 
 The most important thing in this project is that we have to check the path to the credential key in file and in Mage terminal, and everything must be ok.
 
-If not, check, where credential json is. It's strange, but sometimes it puts (when we use sftp) in home directory...
+If not, check, where credential json is. It's strange, but sometimes it is put (when we use sftp) in home directory...
 
 ```txt
 dev:
@@ -857,9 +847,9 @@ dev:
   GOOGLE_LOCATION: us-west1 # Optional
 ```
 
-Note the name of the environment (dev) !!!
+Note the name of the environment (dev) !!! Mage templates have 'default' env as default.
 
-To get Mage interface on local machine we shoul throw port from VSCode (this works, another methods not ok in my f**king network).
+To get Mage interface on local machine we should throw port from VSCode (this works, another methods not ok in my f**king network).
 
 In VS Code, go to the **Command Palette** (`Shift+Cmd+P`), select **Remote-SSH: Connect to Host…​**, and select your VM `roman-empire`.
 
@@ -881,7 +871,7 @@ I hope everything is ok, let's go and build pipeline!
 #### cr3 
 [Back to Criteria](#cr)
 
-### Step 10: Build pipeline with Mage
+### Step 10: Building pipeline with Mage
 <details>
 <summary>Expand</summary>
 
@@ -1588,13 +1578,13 @@ But of course we can do the same without dbt cloud, just don't forget to make an
 #### cr6
 [Back to Criteria](#cr)
 
-### Step 12: Create dashboard for data visualization
+### Step 12: Creating dashboard for data visualization
 <details>
 <summary>Expand</summary>
 
-Now that we have our data, let’s build a dashboard to visualize the data.
+Now that we have our data, let’s build a dashboard to visualize it.
 
-Looker is a tool that helps you explore, share, and visualize your company’s data so that you can make better business decisions.
+Looker is a tool that helps you explore, share, and visualize your data in a very simple way and with good enough documentation.
 
 Go to [Looker Studio](https://lookerstudio.google.com/u/0/) and follow these steps:
 
@@ -1607,44 +1597,44 @@ For example:
 - Select **Table** `fact_roman_news`
 - Click on **CONNECT** button
 
-<table>
-<tr><td>
-<img src="pics/s07.png">
-</td><td>
-<img src="pics/s08.png">
-</td></tr>
-</table>
+![s07](pics/s07.png)
 
-And then add all other tbles from `roman_dbt_prod` and `roman_raw`.
+![s08](pics/s08.png)
+
+
+And then add all other tables from `roman_dbt_prod` and `roman_raw`.
 
 Click on **CREATE REPORT** button.
 (Add data - My data sources!)
 
-You can now feel free to create some visualisations.
+You can now create some visualizations.
 
 Looker tutorials can be found [here](https://cloud.google.com/looker/docs/intro).
-And of course we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the zoomcamp - 20 minutes for all cases!
+And of course we have [extremely clear video](https://www.youtube.com/watch?v=39nLTs74A3E&list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb&index=48) in the DE Zoomcamp - 20 minutes for all the cases!
+Noone can explain better then Victoria.
 
-This is what my final dashboard looks like:
+This is a screen of my final dashboard:
 
 ![s26](pics/s26.png)
 
-You can view my dashboard till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
+You can view my dashboard itself till the end of Google Cloud trial period (16.04.2024) [here](https://lookerstudio.google.com/reporting/434973a5-24a5-4684-9f13-1ad60a7b4ec1).
 </details>
 
-### Step 13: Stop and delete to avoid costs
+### Step 13: Destroying VM with Terraform
 <details>
 <summary>Expand</summary>
 
-To avoid incurring unnecessary charges to your GCP account, destroy all remote objects managed by a our Terraform configuration.
+To avoid charges to your GCP account, destroy all remote objects managed by our Terraform configuration.
 
-On your local machine, run this command:
+On your local machine just run this command:
 
 ``` bash
 terraform destroy
 ```
 
-You can also manually delete your Virtual Environment, Bucket and BigQuery resource and perhaps your Google Cloud project.
+And that's all.
+
+Of course you can also delete your Virtual Environment, Bucket and BigQuery resources and all your Google Cloud project:*( manually.
 </details>
 
 #### cr

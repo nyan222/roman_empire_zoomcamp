@@ -56,7 +56,7 @@ resource "google_bigquery_dataset" "datasets" {
 
 # Virtual Machine Instance
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
-# We need more than 10 GB, ideally 100 GB.
+# We have 40 GB of data from Huggingface so we need 100 GB.
 resource "google_compute_instance" "my-instance" {
   name         = var.instance
   machine_type = var.machine_type
