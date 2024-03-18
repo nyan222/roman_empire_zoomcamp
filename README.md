@@ -241,7 +241,7 @@ gcloud auth application-default login
 Nice, we are now authenticated with the gcloud CLI!
 </details>
 
-### Step 4: Install Terraform
+### Step 4: Installing Terraform
 <details>
 <summary>Expand</summary>
 
@@ -627,7 +627,7 @@ cat ~/.ssh/KEY_NAME.pub
 ```
 </details>
 
-### Step 7: Create SSH config file
+### Step 7: Creating SSH config file
 <details>
 <summary>Expand</summary>
 
@@ -637,7 +637,7 @@ Next, create a file `~/.ssh/config` on your local machine:
 touch ~/.ssh/config
 ```
 
-Edit the file et add this content:
+Edit the file and add these lines:
 
 ``` bash
 Host roman-empire
